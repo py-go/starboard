@@ -28,7 +28,7 @@ MKDOCS_PORT := 8000
 all: build
 
 .PHONY: build
-build: build-starboard-cli build-starboard-operator build-starboard-scanner-aqua
+build: build-starboard-cli build-starboard-operator
 
 ## Builds the starboard binary
 build-starboard-cli: $(SOURCES)
@@ -37,10 +37,6 @@ build-starboard-cli: $(SOURCES)
 ## Builds the starboard-operator binary
 build-starboard-operator: $(SOURCES)
 	CGO_ENABLED=0 GOOS=linux go build -o ./bin/starboard-operator ./cmd/starboard-operator/main.go
-
-## Builds the scanner-aqua binary
-build-starboard-scanner-aqua: $(SOURCES)
-	CGO_ENABLED=0 GOOS=linux go build -o ./bin/starboard-scanner-aqua ./cmd/scanner-aqua/main.go
 
 .PHONY: get-ginkgo
 ## Installs Ginkgo CLI
@@ -129,8 +125,7 @@ clean:
 docker-build: \
 	docker-build-starboard-cli \
 	docker-build-starboard-operator \
-	docker-build-starboard-operator-ubi8 \
-	docker-build-starboard-scanner-aqua
+	docker-build-starboard-operator-ubi8
 
 ## Builds Docker image for Starboard CLI
 docker-build-starboard-cli: build-starboard-cli
@@ -143,10 +138,6 @@ docker-build-starboard-operator: build-starboard-operator
 ## Builds Docker image for Starboard operator ubi8
 docker-build-starboard-operator-ubi8: build-starboard-operator
 	$(DOCKER) build --no-cache -f build/starboard-operator/Dockerfile.ubi8 -t $(STARBOARD_OPERATOR_IMAGE_UBI8) bin
-
-## Builds Docker image for Aqua scanner
-docker-build-starboard-scanner-aqua: build-starboard-scanner-aqua
-	$(DOCKER) build --no-cache -t $(STARBOARD_SCANNER_AQUA_IMAGE) -f build/scanner-aqua/Dockerfile bin
 
 kind-load-images: \
 	docker-build-starboard-operator \
@@ -166,6 +157,5 @@ mkdocs-serve:
 	docker-build-starboard-cli \
 	docker-build-starboard-operator \
 	docker-build-starboard-operator-ubi8 \
-	docker-build-starboard-scanner-aqua \
 	kind-load-images \
 	mkdocs-serve
