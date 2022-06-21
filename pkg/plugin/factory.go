@@ -5,7 +5,6 @@ import (
 
 	"github.com/aquasecurity/starboard/pkg/configauditreport"
 	"github.com/aquasecurity/starboard/pkg/ext"
-	"github.com/aquasecurity/starboard/pkg/plugin/conftest"
 	"github.com/aquasecurity/starboard/pkg/plugin/polaris"
 	"github.com/aquasecurity/starboard/pkg/plugin/trivy"
 	"github.com/aquasecurity/starboard/pkg/starboard"
@@ -14,9 +13,8 @@ import (
 )
 
 const (
-	Trivy    starboard.Scanner = "Trivy"
-	Polaris  starboard.Scanner = "Polaris"
-	Conftest starboard.Scanner = "Conftest"
+	Trivy   starboard.Scanner = "Trivy"
+	Polaris starboard.Scanner = "Polaris"
 )
 
 type Resolver struct {
@@ -104,8 +102,6 @@ func (r *Resolver) GetConfigAuditPlugin() (configauditreport.Plugin, starboard.P
 	switch scanner {
 	case Polaris:
 		return polaris.NewPlugin(ext.NewSystemClock()), pluginContext, nil
-	case Conftest:
-		return conftest.NewPlugin(ext.NewGoogleUUIDGenerator(), ext.NewSystemClock()), pluginContext, nil
 	}
 	return nil, nil, fmt.Errorf("unsupported configuration audit scanner plugin: %s", scanner)
 }

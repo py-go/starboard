@@ -174,49 +174,6 @@ func Start(ctx context.Context, buildInfo starboard.BuildInfo, operatorConfig et
 		}
 	}
 
-	if operatorConfig.ConfigAuditScannerEnabled {
-		plugin, pluginContext, err := plugin.NewResolver().
-			WithBuildInfo(buildInfo).
-			WithNamespace(operatorNamespace).
-			WithServiceAccountName(operatorConfig.ServiceAccount).
-			WithConfig(starboardConfig).
-			WithClient(mgr.GetClient()).
-			GetConfigAuditPlugin()
-		if err != nil {
-			return err
-		}
-
-		err = plugin.Init(pluginContext)
-		if err != nil {
-			return fmt.Errorf("initializing %s plugin: %w", pluginContext.GetName(), err)
-		}
-
-		if err = (&controller.ConfigAuditReportReconciler{
-			Logger:         ctrl.Log.WithName("reconciler").WithName("configauditreport"),
-			Config:         operatorConfig,
-			ConfigData:     starboardConfig,
-			Client:         mgr.GetClient(),
-			ObjectResolver: objectResolver,
-			LimitChecker:   limitChecker,
-			LogsReader:     logsReader,
-			Plugin:         plugin,
-			PluginContext:  pluginContext,
-			ReadWriter:     configauditreport.NewReadWriter(mgr.GetClient()),
-		}).SetupWithManager(mgr); err != nil {
-			return fmt.Errorf("unable to setup configauditreport reconciler: %w", err)
-		}
-
-		if err = (&controller.PluginsConfigReconciler{
-			Logger:        ctrl.Log.WithName("reconciler").WithName("pluginsconfig"),
-			Config:        operatorConfig,
-			Client:        mgr.GetClient(),
-			Plugin:        plugin,
-			PluginContext: pluginContext,
-		}).SetupWithManager(mgr); err != nil {
-			return fmt.Errorf("unable to setup %T: %w", controller.PluginsConfigReconciler{}, err)
-		}
-	}
-
 	if operatorConfig.CISKubernetesBenchmarkEnabled {
 		if err = (&controller.CISKubeBenchReportReconciler{
 			Logger:       ctrl.Log.WithName("reconciler").WithName("ciskubebenchreport"),
@@ -232,8 +189,8 @@ func Start(ctx context.Context, buildInfo starboard.BuildInfo, operatorConfig et
 		}
 	}
 
-	if operatorConfig.ConfigAuditScannerBuiltIn {
-		setupLog.Info("Enabling built-in configuration audit scanner")
+	if operatorConfig.ConfigAuditScannerEnabled {
+		setupLog.Info("Enabling configuration audit scanner")
 		if err = (&configauditreport.ResourceController{
 			Logger:         ctrl.Log.WithName("resourcecontroller"),
 			Config:         operatorConfig,

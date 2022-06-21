@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/aquasecurity/starboard/itest/helper"
-	"github.com/aquasecurity/starboard/pkg/plugin/conftest"
 	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
 	batchv1beta1 "k8s.io/api/batch/v1beta1"
@@ -450,9 +449,7 @@ func ConfigurationCheckerBehavior(inputs *Inputs) func() {
 			})
 
 			It("Should create ConfigAuditReport", func() {
-				if inputs.ConfigAuditReportsPlugin != conftest.Plugin {
-					Skip("This test is only relevant for Conftest plugin")
-				}
+				Skip("This test is only relevant for Conftest plugin")
 				Eventually(inputs.HasConfigAuditReportOwnedBy(svc), inputs.AssertTimeout).Should(BeTrue())
 			})
 
