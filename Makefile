@@ -28,11 +28,7 @@ MKDOCS_PORT := 8000
 all: build
 
 .PHONY: build
-build: build-starboard-cli build-starboard-operator
-
-## Builds the starboard binary
-build-starboard-cli: $(SOURCES)
-	CGO_ENABLED=0 go build -o ./bin/starboard ./cmd/starboard/main.go
+build: build-starboard-operator
 
 ## Builds the starboard-operator binary
 build-starboard-operator: $(SOURCES)
@@ -123,13 +119,8 @@ clean:
 
 ## Builds Docker images for all binaries
 docker-build: \
-	docker-build-starboard-cli \
 	docker-build-starboard-operator \
 	docker-build-starboard-operator-ubi8
-
-## Builds Docker image for Starboard CLI
-docker-build-starboard-cli: build-starboard-cli
-	$(DOCKER) build --no-cache -t $(STARBOARD_CLI_IMAGE) -f build/starboard/Dockerfile bin
 
 ## Builds Docker image for Starboard operator
 docker-build-starboard-operator: build-starboard-operator
@@ -154,7 +145,6 @@ mkdocs-serve:
 .PHONY: \
 	clean \
 	docker-build \
-	docker-build-starboard-cli \
 	docker-build-starboard-operator \
 	docker-build-starboard-operator-ubi8 \
 	kind-load-images \
