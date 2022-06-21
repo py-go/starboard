@@ -14,7 +14,7 @@ env:
   KIND_VERSION: "v0.11.1"
   KIND_IMAGE: "kindest/node:v1.21.1@sha256:69860bda5563ac81e3c0057d654b5253219618a22ec3a346306239bba8cfa1a6"
 jobs:
-  unit-tests:
+  run-unit-tests:
     name: Run unit tests
     runs-on: ubuntu-20.04
     steps:
@@ -34,45 +34,10 @@ jobs:
             ${{ runner.os }}-go-
       - name: Run unit tests
         run: make unit-tests
-  itest-starboard:
-    name: Run integration tests / Starboard CLI
+  run-integration-tests:
+    name: Run integration tests
     needs:
-      - unit-tests
-    runs-on: ubuntu-20.04
-    timeout-minutes: 15
-    steps:
-      - name: Setup Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: ${{ env.GO_VERSION }}
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - uses: actions/cache@v3
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-      - name: Setup Kubernetes cluster (KIND)
-        uses: engineerd/setup-kind@v0.5.0
-        with:
-          version: ${{ env.KIND_VERSION }}
-          image: ${{ env.KIND_IMAGE }}
-      - name: Test connection to Kubernetes cluster
-        run: |
-          kubectl cluster-info
-          kubectl wait --for=condition=Ready nodes --all --timeout=300s
-          kubectl describe node
-      - name: Run integration tests
-        run: |
-          make itests-starboard
-        env:
-          KUBECONFIG: /home/runner/.kube/config
-          STARBOARD_TEST_CLI_LOG_LEVEL: "0"
-  itest-starboard-operator:
-    name: Run integration tests / Starboard Operator
-    needs:
-      - unit-tests
+      - run-unit-tests
     runs-on: ubuntu-20.04
     timeout-minutes: 15
     steps:
@@ -113,56 +78,10 @@ jobs:
           KUBECONFIG: /home/runner/.kube/config
           OPERATOR_NAMESPACE: starboard-system
           OPERATOR_TARGET_NAMESPACES: default
-  integration-operator-conftest:
-    name: Integration / Operator / Conftest
-    needs:
-      - unit-tests
-    runs-on: ubuntu-20.04
-    timeout-minutes: 15
-    steps:
-      - name: Setup Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: ${{ env.GO_VERSION }}
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - uses: actions/cache@v3
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-      - name: Setup Kubernetes cluster (KIND)
-        uses: engineerd/setup-kind@v0.5.0
-        with:
-          version: ${{ env.KIND_VERSION }}
-          image: ${{ env.KIND_IMAGE }}
-      - name: Test connection to Kubernetes cluster
-        run: |
-          kubectl cluster-info
-          kubectl wait --for=condition=Ready nodes --all --timeout=300s
-          kubectl describe node
-      - name: Run integration tests
-        run: |
-          kubectl apply -f deploy/crd/vulnerabilityreports.crd.yaml \
-                 -f deploy/crd/configauditreports.crd.yaml \
-                 -f deploy/crd/clusterconfigauditreports.crd.yaml \
-                 -f deploy/crd/clustercompliancereports.crd.yaml \
-                 -f deploy/crd/clustercompliancedetailreports.crd.yaml \
-                 -f deploy/crd/ciskubebenchreports.crd.yaml
-          kubectl apply -f deploy/static/01-starboard-operator.ns.yaml \
-            -f deploy/static/02-starboard-operator.rbac.yaml
-          make integration-operator-conftest
-        env:
-          KUBECONFIG: /home/runner/.kube/config
-          OPERATOR_NAMESPACE: starboard-system
-          OPERATOR_TARGET_NAMESPACES: default
   release:
     name: Release
     needs:
-      - itest-starboard
-      - itest-starboard-operator
-      - integration-operator-conftest
+      - run-integration-tests
     runs-on: ubuntu-20.04
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
@@ -200,5 +119,3 @@ jobs:
           args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Update new version for plugin 'starboard' in krew-index
-        uses: rajatjindal/krew-release-bot@v0.0.43
