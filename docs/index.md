@@ -1,4 +1,4 @@
-# Welcome to {{ config.site_name }}
+# {{ config.site_name }}
 
 There are lots of security tools in the cloud native world, created by Aqua and by others, for identifying and informing
 users about security issues in Kubernetes workloads and infrastructure components. However powerful and useful they
@@ -29,8 +29,6 @@ Starboard can be used:
 - As a [Kubernetes operator] to automatically update security reports in response to workload and other changes on a
   Kubernetes cluster - for example, initiating a vulnerability scan when a new Pod is started or running CIS Benchmarks
   when a new Node is added.
-- As a [command][cli], so you can trigger scans and view the risks in a kubectl-compatible way or as part of your CI/CD
-  pipeline.
 
 ## What's Next?
 
