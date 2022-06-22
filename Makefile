@@ -39,16 +39,6 @@ build-starboard-operator: $(SOURCES)
 get-ginkgo:
 	@go install github.com/onsi/ginkgo/ginkgo
 
-.PHONY: get-qtc
-## Installs quicktemplate compiler
-get-qtc:
-	@go install github.com/valyala/quicktemplate/qtc
-
-.PHONY: compile-templates
-## Converts quicktemplate files (*.qtpl) into Go code
-compile-templates: get-qtc
-	$(GOBIN)/qtc
-
 .PHONY: test
 ## Runs both unit and integration tests
 test: unit-tests itests-starboard itests-starboard-operator
@@ -57,23 +47,6 @@ test: unit-tests itests-starboard itests-starboard-operator
 ## Runs unit tests with code coverage enabled
 unit-tests: $(SOURCES)
 	go test -v -short -race -timeout 30s -coverprofile=coverage.txt ./...
-
-.PHONY: itests-starboard
-## Runs integration tests for Starboard CLI with code coverage enabled
-itests-starboard: check-kubeconfig get-ginkgo
-	@$(GINKGO) \
-	-coverprofile=coverage.txt \
-	-coverpkg=github.com/aquasecurity/starboard/pkg/cmd,\
-	github.com/aquasecurity/starboard/pkg/plugin,\
-	github.com/aquasecurity/starboard/pkg/kube,\
-	github.com/aquasecurity/starboard/pkg/kubebench,\
-	github.com/aquasecurity/starboard/pkg/kubehunter,\
-	github.com/aquasecurity/starboard/pkg/plugin/trivy,\
-	github.com/aquasecurity/starboard/pkg/plugin/polaris,\
-	github.com/aquasecurity/starboard/pkg/plugin/conftest,\
-	github.com/aquasecurity/starboard/pkg/configauditreport,\
-	github.com/aquasecurity/starboard/pkg/vulnerabilityreport \
-	./itest/starboard
 
 .PHONY: itests-starboard-operator
 ## Runs integration tests for Starboard Operator with code coverage enabled
@@ -91,18 +64,6 @@ itests-starboard-operator: check-kubeconfig get-ginkgo
 	github.com/aquasecurity/starboard/pkg/vulnerabilityreport,\
 	github.com/aquasecurity/starboard/pkg/kubebench \
 	./itest/starboard-operator
-
-.PHONY: integration-operator-conftest
-integration-operator-conftest: check-kubeconfig get-ginkgo
-	@$(GINKGO) \
-	-coverprofile=coverage.txt \
-	-coverpkg=github.com/aquasecurity/starboard/pkg/operator,\
-	github.com/aquasecurity/starboard/pkg/operator/predicate,\
-	github.com/aquasecurity/starboard/pkg/operator/controller,\
-	github.com/aquasecurity/starboard/pkg/plugin,\
-	github.com/aquasecurity/starboard/pkg/plugin/conftest,\
-	github.com/aquasecurity/starboard/pkg/configauditreport \
-	./itest/starboard-operator/configauditreport/conftest
 
 .PHONY: check-kubeconfig
 check-kubeconfig:
