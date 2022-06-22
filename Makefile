@@ -32,7 +32,7 @@ build: build-starboard-operator
 
 ## Builds the starboard-operator binary
 build-starboard-operator: $(SOURCES)
-	CGO_ENABLED=0 GOOS=linux go build -o ./bin/starboard-operator ./cmd/starboard-operator/main.go
+	CGO_ENABLED=0 GOOS=linux go build -o ./bin/starboard-operator ./cmd/security-manager/main.go
 
 .PHONY: get-ginkgo
 ## Installs Ginkgo CLI
