@@ -19,3 +19,6 @@ output/*
 .cr-release-packages/*
 ## idea files
 *.iml
+
+# ignore Helm subcharts
+deploy/helm/charts/

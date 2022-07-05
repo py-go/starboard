@@ -1,6 +1,6 @@
 apiVersion: v2
-name: starboard-operator
-description: Keeps security report resources updated
+name: kube-security-manager
+description: The Kubernetes Security Manager
 type: application
 
 # This is the chart version. This version number should be incremented each time you make changes
@@ -13,19 +13,13 @@ version: 0.10.6
 # follow Semantic Versioning. They should reflect the version the application is using.
 appVersion: 0.15.6
 
-# kubeVersion: A SemVer range of compatible Kubernetes versions (optional)
-
 keywords:
-  - aquasecurity
-  - starboard
-  - trivy
-# home: https://github.com/aquasecurity/starboard
+  - security
 sources:
-  - https://github.com/aquasecurity/starboard
-# maintainers: # (optional)
-#   - name: The maintainers name (required for each maintainer)
-#     email: The maintainers email (optional for each maintainer)
-#     url: A URL for the maintainer (optional for each maintainer)
-# icon: A URL to an SVG or PNG image to be used as an icon (optional).
-# annotations:
-#   example: A list of annotations keyed by name (optional).
+  - https://github.com/danielpacak/kube-security-manager
+
+dependencies:
+  - name: trivy
+    version: "~0.4.15"
+    # helm repo add aqua-charts https://aquasecurity.github.io/helm-charts
+    repository: "@aqua-charts"

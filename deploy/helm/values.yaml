@@ -47,8 +47,6 @@ operator:
   configAuditScannerBuiltIn: true
   # kubernetesBenchmarkEnabled the flag to enable CIS Kubernetes Benchmark scanner
   kubernetesBenchmarkEnabled: true
-  # clusterComplianceEnabled the flag to enable cluster compliance report generation
-  clusterComplianceEnabled: true
   # batchDeleteLimit the maximum number of config audit reports deleted by the operator when the plugin's config has changed.
   batchDeleteLimit: 10
   # vulnerabilityScannerScanOnlyCurrentRevisions the flag to only create vulnerability scans on the current revision of a deployment.
@@ -106,7 +104,7 @@ trivy:
 
   # mode is the Trivy client mode. Either Standalone or ClientServer. Depending
   # on the active mode other settings might be applicable or required.
-  mode: Standalone
+  mode: ClientServer
 
   # httpProxy is the HTTP proxy used by Trivy to download the vulnerabilities database from GitHub.
   #
@@ -162,10 +160,6 @@ trivy:
   # database from GitHub. Only applicable in Standalone mode.
   #
   # githubToken: "*****"
-
-  # serverURL is the endpoint URL of the Trivy server. Required in ClientServer mode.
-  #
-  # serverURL: "https://trivy.trivy:4975"
 
   # serverInsecure is the flag to enable insecure connection to the Trivy server.
   #

@@ -24,9 +24,6 @@ data:
   {{- if .Values.operator.kubernetesBenchmarkEnabled }}
   kube-bench.imageRef: {{ required ".Values.kubeBench.imageRef is required" .Values.kubeBench.imageRef | quote }}
   {{- end }}
-  {{- if .Values.operator.clusterComplianceEnabled }}
-  compliance.failEntriesLimit: {{ required ".Values.compliance.failEntriesLimit is required" .Values.compliance.failEntriesLimit | quote }}
-  {{- end }}
 ---
 apiVersion: v1
 kind: Secret
@@ -78,7 +75,7 @@ data:
 {{- . | trim | nindent 4 }}
   {{- end }}
   {{- if eq .mode "ClientServer" }}
-  trivy.serverURL: {{ required ".Values.trivy.serverURL is required" .serverURL | quote }}
+  trivy.serverURL: http://kube-security-manager-trivy:495
   {{- end }}
   {{- with .resources }}
     {{- with .requests }}
