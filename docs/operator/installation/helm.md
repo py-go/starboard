@@ -6,46 +6,35 @@ YAML manifests called Helm [charts].
 To address shortcomings of [static YAML manifests](./kubectl.md) we provide the Helm chart to deploy the Starboard
 Operator. The Helm chart supports all [Install Modes](./../configuration.md#install-modes).
 
-As an example, let's install the operator in the `starboard-system` namespace and configure it to select all namespaces,
-except `kube-system` and `starboard-system`:
+As an example, let's install Security Manager in the `kube-system` namespace and configure it to select all namespaces,
+except `kube-system`:
 
 1. Clone the chart directory:
    ```
-   git clone --depth 1 --branch {{ git.tag }} https://github.com/aquasecurity/starboard.git
-   cd starboard
+   git clone --depth 1 --branch {{ git.tag }} https://github.com/danielpacak/kube-security-manager.git
+   cd kube-security-manager
    ```
-   Or add Aqua chart repository:
+   Add Aqua chart repository, which is required to install Trivy server:
    ```
-   helm repo add aqua https://aquasecurity.github.io/helm-charts/
-   helm repo update
+   helm repo add aqua-charts https://aquasecurity.github.io/helm-charts/
    ```
 2. Install the chart from a local directory:
    ```
-   helm install starboard-operator ./deploy/helm \
-     --namespace starboard-system \
-     --create-namespace \
-     --set="trivy.ignoreUnfixed=true"
+   helm install kube-security-manager ./deploy/helm/kube-security-manager \
+     --namespace kube-system
    ```
-   Or install the chart from the Aqua chart repository:
-   ```
-   helm install starboard-operator aqua/starboard-operator \
-     --namespace starboard-system \
-     --create-namespace \
-     --set="trivy.ignoreUnfixed=true" \
-     --version {{ var.chart_version }}
-   ```
-   There are many [values] in the chart that can be set to configure Starboard.
-3. Check that the `starboard-operator` Helm release is created in the `starboard-system` namespace, and it has status
+   There are many [values] in the chart that can be set to configure Security Manager.
+3. Check that the `kube-security-manager` Helm release is created in the `kube-system` namespace, and it has status
    `deployed`:
    ```console
-   $ helm list -n starboard-system
-   NAME              	NAMESPACE         	REVISION	UPDATED                             	STATUS  	CHART                   	APP VERSION
-   starboard-operator	starboard-system	1       	2021-01-27 20:09:53.158961 +0100 CET	deployed	starboard-operator-{{ var.chart_version }}	{{ git.tag[1:] }}
+   $ helm list -n kube-system
+   NAME                 	NAMESPACE  	REVISION	UPDATED                              	STATUS  	CHART                       	APP VERSION
+   kube-security-manager	kube-system	1       	2022-07-05 21:50:09.711324 +0200 CEST	deployed	kube-security-manager-0.10.6	0.15.6
    ```
-   To confirm that the operator is running, check that the `starboard-operator` Deployment in the `starboard-system`
+   To confirm that the Security Manager is running, check that the `starboard-operator` Deployment in the `kube-system`
    namespace is available and all its containers are ready:
    ```console
-   $ kubectl get deployment -n starboard-system
+   $ kubectl get deployment -n kube-system
    NAME                 READY   UP-TO-DATE   AVAILABLE   AGE
    starboard-operator   1/1     1            1           11m
    ```
@@ -56,10 +45,10 @@ except `kube-system` and `starboard-system`:
 
 ## Uninstall
 
-You can uninstall the operator with the following command:
+You can uninstall Security Manager with the following command:
 
 ```
-helm uninstall starboard-operator -n starboard-system
+helm uninstall kube-security-manager -n kube-system
 ```
 
 You have to manually delete custom resource definitions created by the `helm install` command:

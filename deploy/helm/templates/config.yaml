@@ -32,6 +32,7 @@ metadata:
   labels:
     {{- include "starboard-operator.labels" . | nindent 4 }}
 {{- if eq .Values.starboard.vulnerabilityReportsPlugin "Trivy" }}
+{{- $fullname := include "starboard-operator.fullname" . }}
 {{- with .Values.trivy }}
 {{- if .createConfig }}
 ---
@@ -75,7 +76,7 @@ data:
 {{- . | trim | nindent 4 }}
   {{- end }}
   {{- if eq .mode "ClientServer" }}
-  trivy.serverURL: http://kube-security-manager-trivy:495
+  trivy.serverURL: http://{{ $fullname }}-trivy:4954
   {{- end }}
   {{- with .resources }}
     {{- with .requests }}

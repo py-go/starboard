@@ -1,6 +1,10 @@
 apiVersion: v2
 name: kube-security-manager
 description: The Kubernetes Security Manager
+home: https://github.com/danielpacak/kube-security-manager
+sources:
+  - https://github.com/danielpacak/kube-security-manager
+
 type: application
 
 # This is the chart version. This version number should be incremented each time you make changes
@@ -12,11 +16,6 @@ version: 0.10.6
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 appVersion: 0.15.6
-
-keywords:
-  - security
-sources:
-  - https://github.com/danielpacak/kube-security-manager
 
 dependencies:
   - name: trivy
