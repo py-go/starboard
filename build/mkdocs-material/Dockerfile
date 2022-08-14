@@ -1,4 +1,3 @@
-FROM squidfunk/mkdocs-material:8.2.7
+FROM squidfunk/mkdocs-material:8.3.9
 
-RUN pip install mike
 RUN pip install mkdocs-macros-plugin

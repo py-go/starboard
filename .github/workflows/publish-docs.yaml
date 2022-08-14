@@ -1,6 +1,7 @@
 ---
-# This is a manually triggered workflow to build and publish the MkDocs from the
-# specified Git revision to GitHub pages on https://aquasecurity.github.io/starboard.
+# This is a manually triggered workflow to build and publish documentation pages
+# from the specified Git revision to GitHub pages on
+# https://danielpacak.github.io/kube-security-manager/.
 name: Publish documentation
 
 on:
@@ -9,9 +10,10 @@ on:
       ref:
         description: The branch, tag or SHA to deploy, e.g. v0.0.1
         required: true
+        default: main
 
 # Disable permissions granted to the GITHUB_TOKEN for all the available scopes.
-permissions: {}
+permissions: { }
 
 jobs:
   deploy:
@@ -30,14 +32,10 @@ jobs:
         with:
           python-version: 3.x
       - run: |
-          pip install git+https://${GH_TOKEN}@github.com/squidfunk/mkdocs-material-insiders.git
-          pip install mike
+          pip install mkdocs-material
           pip install mkdocs-macros-plugin
-        env:
-          # Note: It is not the same as ${{ secrets.GITHUB_TOKEN }} !
-          GH_TOKEN: ${{ secrets.MKDOCS_AQUA_BOT }}
       - run: |
-          git config user.name "aqua-bot"
-          git config user.email "aqua-bot@users.noreply.github.com"
+          git config user.name "danielpacak"
+          git config user.email "pacak.daniel@gmail.com"
       - run: |
-          mike deploy --push --update-aliases ${{ github.event.inputs.ref }} latest
+          mkdocs gh-deploy --force

@@ -1,6 +1,7 @@
+---
 site_name: The Kubernetes Security Manager
 site_url: https://danielpacak.github.io/kube-security-manager/
-site_description: Kubernetes-native security toolkit
+site_description: Kubernetes-native security manager
 docs_dir: docs/
 repo_name: GitHub
 repo_url: https://github.com/danielpacak/kube-security-manager
@@ -41,14 +42,11 @@ nav:
       - ClusterConfigAuditReport: crds/clusterconfigaudit-report.md
       - CISKubeBenchReport: crds/ciskubebench-report.md
       - KubeHunterReport: crds/kubehunter-report.md
-  - Frequently Asked Questions: faq.md
-  - Further Reading: further-reading.md
 
 theme:
   name: material
   custom_dir: overrides
   language: 'en'
-  logo: images/starboard-icon-white.svg
 
 markdown_extensions:
   - pymdownx.highlight
@@ -62,9 +60,6 @@ markdown_extensions:
 #
 # Requires pip install mike and pip install git+https://${GH_TOKEN}@github.com/squidfunk/mkdocs-material-insiders.git
 extra:
-  generator: false
-  version:
-    provider: mike
   var:
     prev_git_tag: "v0.15.5"
     chart_version: 0.10.6
