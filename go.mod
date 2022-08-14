@@ -1,6 +1,6 @@
 module github.com/aquasecurity/starboard
 
-go 1.18
+go 1.19
 
 require (
 	github.com/caarlos0/env/v6 v6.9.3
@@ -14,7 +14,6 @@ require (
 	github.com/onsi/gomega v1.19.0
 	github.com/open-policy-agent/opa v0.40.0
 	github.com/stretchr/testify v1.7.1
-	github.com/valyala/quicktemplate v1.7.0
 	k8s.io/api v0.24.1
 	k8s.io/apiextensions-apiserver v0.24.0
 	k8s.io/apimachinery v0.24.1
@@ -64,7 +63,6 @@ require (
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/yashtewari/glob-intersection v0.1.0 // indirect
