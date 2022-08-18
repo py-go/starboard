@@ -41,7 +41,7 @@ get-ginkgo:
 
 .PHONY: test
 ## Runs both unit and integration tests
-test: unit-tests itests-starboard itests-starboard-operator
+test: unit-tests itests-starboard-operator
 
 .PHONY: unit-tests
 ## Runs unit tests with code coverage enabled
