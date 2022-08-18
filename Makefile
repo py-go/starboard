@@ -2,6 +2,9 @@
 .DEFAULT_GOAL := build
 MAKEFLAGS += --no-print-directory
 
+BIN := bin
+
+GO ?= go
 DOCKER ?= docker
 KIND ?= kind
 
@@ -16,37 +19,26 @@ GINKGO=$(GOBIN)/ginkgo
 SOURCES := $(shell find . -name '*.go')
 
 IMAGE_TAG := dev
-STARBOARD_CLI_IMAGE := aquasec/starboard:$(IMAGE_TAG)
-STARBOARD_OPERATOR_IMAGE := aquasec/starboard-operator:$(IMAGE_TAG)
-STARBOARD_SCANNER_AQUA_IMAGE := aquasec/starboard-scanner-aqua:$(IMAGE_TAG)
-STARBOARD_OPERATOR_IMAGE_UBI8 := aquasec/starboard-operator:$(IMAGE_TAG)-ubi8
+IMAGE_NAME := docker.io/danielpacak/kube-security-manager:$(IMAGE_TAG)
 
-MKDOCS_IMAGE := aquasec/mkdocs-material:starboard
+MKDOCS_IMAGE_REF := mkdocs-material:kube-security-manager
 MKDOCS_PORT := 8000
 
-.PHONY: all
-all: build
+$(BIN):
+	$(Q)mkdir -p $@
 
-.PHONY: build
-build: build-starboard-operator
-
-## Builds the starboard-operator binary
-build-starboard-operator: $(SOURCES)
-	CGO_ENABLED=0 GOOS=linux go build -o ./bin/starboard-operator ./cmd/security-manager/main.go
+$(BIN)/kube-security-manager: $(SOURCES) | $(BIN)
+	CGO_ENABLED=0 GOOS=linux $(GO) build -o $@ ./cmd/security-manager/main.go
 
 .PHONY: get-ginkgo
 ## Installs Ginkgo CLI
 get-ginkgo:
-	@go install github.com/onsi/ginkgo/ginkgo
-
-.PHONY: test
-## Runs both unit and integration tests
-test: unit-tests itests-starboard-operator
+	$(GO) install github.com/onsi/ginkgo/ginkgo
 
 .PHONY: unit-tests
 ## Runs unit tests with code coverage enabled
 unit-tests: $(SOURCES)
-	go test -v -short -race -timeout 30s -coverprofile=coverage.txt ./...
+	$(GO) test -v -short -race -timeout 30s -coverprofile=coverage.txt ./...
 
 .PHONY: itests-starboard-operator
 ## Runs integration tests for Starboard Operator with code coverage enabled
@@ -78,35 +70,19 @@ clean:
 	@rm -r ./bin 2> /dev/null || true
 	@rm -r ./dist 2> /dev/null || true
 
-## Builds Docker images for all binaries
-docker-build: \
-	docker-build-starboard-operator \
-	docker-build-starboard-operator-ubi8
+.PHONY: docker-build
+docker-build: $(BIN)/kube-security-manager
+	$(DOCKER) image build --no-cache -t $(IMAGE_NAME) -f build/starboard-operator/Dockerfile bin
 
-## Builds Docker image for Starboard operator
-docker-build-starboard-operator: build-starboard-operator
-	$(DOCKER) build --no-cache -t $(STARBOARD_OPERATOR_IMAGE) -f build/starboard-operator/Dockerfile bin
-	
-## Builds Docker image for Starboard operator ubi8
-docker-build-starboard-operator-ubi8: build-starboard-operator
-	$(DOCKER) build --no-cache -f build/starboard-operator/Dockerfile.ubi8 -t $(STARBOARD_OPERATOR_IMAGE_UBI8) bin
-
-kind-load-images: \
-	docker-build-starboard-operator \
-	docker-build-starboard-operator-ubi8
-	$(KIND) load docker-image \
-		$(STARBOARD_OPERATOR_IMAGE) \
-		$(STARBOARD_OPERATOR_IMAGE_UBI8)
+.PHONY: kind-load-images
+kind-load-images: docker-build
+	$(KIND) load docker-image $(IMAGE_NAME)
 
 ## Runs MkDocs development server to preview the documentation page
 mkdocs-serve:
-	$(DOCKER) build -t $(MKDOCS_IMAGE) -f build/mkdocs-material/Dockerfile bin
-	$(DOCKER) run --name mkdocs-serve --rm -v $(PWD):/docs -p $(MKDOCS_PORT):8000 $(MKDOCS_IMAGE)
+	$(DOCKER) image build -t $(MKDOCS_IMAGE_REF) -f build/mkdocs-material/Dockerfile bin
+	$(DOCKER) container run --name mkdocs-serve --rm -v $(PWD):/docs -p $(MKDOCS_PORT):8000 $(MKDOCS_IMAGE_REF)
 
 .PHONY: \
 	clean \
-	docker-build \
-	docker-build-starboard-operator \
-	docker-build-starboard-operator-ubi8 \
-	kind-load-images \
 	mkdocs-serve

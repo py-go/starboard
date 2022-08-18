@@ -1,9 +1,10 @@
-FROM alpine:3.15
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.5
 
-RUN adduser -u 10000 -D -g '' starboard starboard
+RUN microdnf install shadow-utils
+RUN useradd -u 10000 manager
+WORKDIR /opt/bin/
+COPY kube-security-manager /usr/local/bin/kube-security-manager
 
-COPY starboard-operator /usr/local/bin/starboard-operator
+USER manager
 
-USER starboard
-
-ENTRYPOINT ["starboard-operator"]
+ENTRYPOINT ["kube-security-manager"]
