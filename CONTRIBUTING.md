@@ -46,6 +46,7 @@ These guidelines will help you get started with the Starboard project.
 - Tests are not required at this point as Starboard is evolving fast, but if you can include tests that will be appreciated.
 
 #### Conventional Commits
+
 It is not that strict, but we use the [Conventional commits](https://www.conventionalcommits.org) in this repository.
 Each commit message doesn't have to follow conventions as long as it is clear and descriptive since it will be squashed and merged.
 
@@ -53,13 +54,13 @@ Each commit message doesn't have to follow conventions as long as it is clear an
 
 1. Install Go
 
-   The project requires [Go 1.18][go-download] or later. We also assume that you're familiar with
+   The project requires [Go 1.19][go-download] or later. We also assume that you're familiar with
    Go's [GOPATH workspace][go-code] convention, and have the appropriate environment variables set.
 2. Get the source code:
 
    ```
-   git clone git@github.com:aquasecurity/starboard.git
-   cd starboard
+   git clone https://github.com/danielpacak/kube-security-manager.git
+   cd kube-security-manager
    ```
 3. Access to a Kubernetes cluster. We assume that you're using a [KIND][kind] cluster. To create a single-node KIND
    cluster, run:
@@ -70,11 +71,9 @@ Each commit message doesn't have to follow conventions as long as it is clear an
 
 ## Build Binaries
 
-| Binary                   | Image                                          | Description                                                   |
-|--------------------------|------------------------------------------------|---------------------------------------------------------------|
-| `starboard`              | `docker.io/aquasec/starboard:dev`              | Starboard command-line interface                              |
-| `starboard-operator`     | `docker.io/aquasec/starboard-operator:dev`     | Starboard Operator                                            |
-| `starboard-scanner-aqua` | `docker.io/aquasec/starboard-scanner-aqua:dev` | Starboard plugin to integrate with Aqua vulnerability scanner |
+| Binary                  | Image                                             | Description        |
+|-------------------------|---------------------------------------------------|--------------------|
+| `kube-security-manager` | `docker.io/danielpacak/kube-security-manager:dev` | Starboard Operator |
 
 To build all Starboard binaries, run:
 
@@ -93,9 +92,7 @@ make docker-build
 To load Docker images into your KIND cluster, run:
 
 ```
-kind load docker-image aquasec/starboard:dev
-kind load docker-image aquasec/starboard-operator:dev
-kind load docker-image aquasec/starboard-scanner-aqua:dev
+make kind-load-images
 ```
 
 ## Run Tests
@@ -189,7 +186,7 @@ basic development workflow. For other install modes see [Operator Multitenancy w
 
 1. Build the operator binary into the Docker image and load it from your host into KIND cluster nodes:
    ```
-   make docker-build-starboard-operator && kind load docker-image aquasec/starboard-operator:dev
+   make kind-load-images
    ```
 2. Create the `starboard-operator` Deployment in the `starboard-system` namespace to run the operator's container:
    ```

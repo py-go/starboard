@@ -9,8 +9,6 @@ cat $CRD_DIR/vulnerabilityreports.crd.yaml \
   $CRD_DIR/configauditreports.crd.yaml \
   $CRD_DIR/clusterconfigauditreports.crd.yaml \
   $CRD_DIR/ciskubebenchreports.crd.yaml \
-  $CRD_DIR/clustercompliancereports.crd.yaml \
-  $CRD_DIR/clustercompliancedetailreports.crd.yaml \
   $STATIC_DIR/01-starboard-operator.ns.yaml \
   $STATIC_DIR/02-starboard-operator.rbac.yaml \
   $STATIC_DIR/03-starboard-operator.config.yaml \
