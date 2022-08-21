@@ -26,7 +26,7 @@ type Config struct {
 	VulnerabilityScannerEnabled                  bool           `env:"OPERATOR_VULNERABILITY_SCANNER_ENABLED" envDefault:"true"`
 	VulnerabilityScannerScanOnlyCurrentRevisions bool           `env:"OPERATOR_VULNERABILITY_SCANNER_SCAN_ONLY_CURRENT_REVISIONS" envDefault:"false"`
 	VulnerabilityScannerReportTTL                *time.Duration `env:"OPERATOR_VULNERABILITY_SCANNER_REPORT_TTL"`
-	ConfigAuditScannerEnabled                    bool           `env:"OPERATOR_CONFIG_AUDIT_SCANNER_ENABLED" envDefault:"false"`
+	ConfigAuditScannerEnabled                    bool           `env:"OPERATOR_CONFIG_AUDIT_SCANNER_ENABLED" envDefault:"true"`
 	ConfigAuditScannerScanOnlyCurrentRevisions   bool           `env:"OPERATOR_CONFIG_AUDIT_SCANNER_SCAN_ONLY_CURRENT_REVISIONS" envDefault:"false"`
 
 	LeaderElectionEnabled bool   `env:"OPERATOR_LEADER_ELECTION_ENABLED" envDefault:"false"`

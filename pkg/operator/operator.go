@@ -114,12 +114,8 @@ func Start(ctx context.Context, buildInfo starboard.BuildInfo, operatorConfig et
 	}
 
 	configManager := starboard.NewConfigManager(kubeClientset, operatorNamespace)
-	err = configManager.EnsureDefault(context.Background())
-	if err != nil {
-		return err
-	}
 
-	starboardConfig, err := configManager.Read(context.Background())
+	starboardConfig, err := configManager.Read(ctx)
 	if err != nil {
 		return err
 	}
