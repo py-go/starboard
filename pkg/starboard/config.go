@@ -4,10 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strconv"
 	"strings"
 
-	embedded "github.com/aquasecurity/starboard"
 	"github.com/aquasecurity/starboard/pkg/apis/aquasecurity/v1alpha1"
 	"github.com/google/go-containerregistry/pkg/name"
 	appsv1 "k8s.io/api/apps/v1"
@@ -58,12 +56,9 @@ const (
 	KeyVulnerabilityScansInSameNamespace = "vulnerabilityReports.scanJobsInSameNamespace"
 	keyConfigAuditReportsScanner         = "configAuditReports.scanner"
 	keyKubeBenchImageRef                 = "kube-bench.imageRef"
-	keyKubeHunterImageRef                = "kube-hunter.imageRef"
-	keyKubeHunterQuick                   = "kube-hunter.quick"
 	keyScanJobTolerations                = "scanJob.tolerations"
 	keyScanJobAnnotations                = "scanJob.annotations"
 	keyScanJobPodTemplateLabels          = "scanJob.podTemplateLabels"
-	keyComplianceFailEntriesLimit        = "compliance.failEntriesLimit"
 )
 
 // ConfigData holds Starboard configuration settings as a set of key-value
@@ -72,7 +67,6 @@ type ConfigData map[string]string
 
 // ConfigManager defines methods for managing ConfigData.
 type ConfigManager interface {
-	EnsureDefault(ctx context.Context) error
 	Read(ctx context.Context) (ConfigData, error)
 	Delete(ctx context.Context) error
 }
@@ -169,21 +163,6 @@ func (c ConfigData) GetKubeBenchImageRef() (string, error) {
 	return c.GetRequiredData(keyKubeBenchImageRef)
 }
 
-func (c ConfigData) GetKubeHunterImageRef() (string, error) {
-	return c.GetRequiredData(keyKubeHunterImageRef)
-}
-
-func (c ConfigData) GetKubeHunterQuick() (bool, error) {
-	val, ok := c[keyKubeHunterQuick]
-	if !ok {
-		return false, nil
-	}
-	if val != "false" && val != "true" {
-		return false, fmt.Errorf("property kube-hunter.quick must be either \"false\" or \"true\", got %q", val)
-	}
-	return val == "true", nil
-}
-
 func (c ConfigData) GetRequiredData(key string) (string, error) {
 	var ok bool
 	var value string
@@ -212,20 +191,6 @@ func GetVersionFromImageRef(imageRef string) (string, error) {
 	return version, nil
 }
 
-func (c ConfigData) ComplianceFailEntriesLimit() int {
-	const defaultValue = 10
-	var value string
-	var ok bool
-	if value, ok = c[keyComplianceFailEntriesLimit]; !ok {
-		return defaultValue
-	}
-	intVal, err := strconv.Atoi(value)
-	if err != nil {
-		return defaultValue
-	}
-	return intVal
-}
-
 // NewConfigManager constructs a new ConfigManager that is using kubernetes.Interface
 // to manage ConfigData backed by the ConfigMap stored in the specified namespace.
 func NewConfigManager(client kubernetes.Interface, namespace string) ConfigManager {
@@ -238,61 +203,6 @@ func NewConfigManager(client kubernetes.Interface, namespace string) ConfigManag
 type configManager struct {
 	client    kubernetes.Interface
 	namespace string
-}
-
-func (c *configManager) EnsureDefault(ctx context.Context) error {
-	_, err := c.client.CoreV1().ConfigMaps(c.namespace).Get(ctx, ConfigMapName, metav1.GetOptions{})
-	if err != nil {
-		if !apierrors.IsNotFound(err) {
-			return fmt.Errorf("failed getting configmap: %s: %w", ConfigMapName, err)
-		}
-		_, err = c.client.CoreV1().ConfigMaps(c.namespace).Create(ctx, &corev1.ConfigMap{
-			ObjectMeta: metav1.ObjectMeta{
-				Namespace: c.namespace,
-				Name:      ConfigMapName,
-				Labels: labels.Set{
-					LabelK8SAppManagedBy: "starboard",
-				},
-			},
-			Data: GetDefaultConfig(),
-		}, metav1.CreateOptions{})
-
-		if err != nil {
-			return fmt.Errorf("failed creating configmap: %s: %w", ConfigMapName, err)
-		}
-	}
-
-	_, err = c.client.CoreV1().ConfigMaps(c.namespace).Get(ctx, PoliciesConfigMapName, metav1.GetOptions{})
-	if err != nil {
-		if !apierrors.IsNotFound(err) {
-			return fmt.Errorf("failed getting configmap: %s: %w", PoliciesConfigMapName, err)
-		}
-		policyCM, err := embedded.PoliciesConfigMap()
-		if err != nil {
-			return fmt.Errorf("failed getting embedded policies: %w", err)
-		}
-		policyCM.Namespace = c.namespace
-		_, err = c.client.CoreV1().ConfigMaps(c.namespace).Create(ctx, &policyCM, metav1.CreateOptions{})
-		if err != nil {
-			return fmt.Errorf("failed creating configmap: %s: %w", PoliciesConfigMapName, err)
-		}
-	}
-
-	secret := &corev1.Secret{
-		ObjectMeta: metav1.ObjectMeta{
-			Namespace: c.namespace,
-			Name:      SecretName,
-			Labels: labels.Set{
-				LabelK8SAppManagedBy: "starboard",
-			},
-		},
-	}
-	_, err = c.client.CoreV1().Secrets(c.namespace).Create(ctx, secret, metav1.CreateOptions{})
-	if err != nil && !apierrors.IsAlreadyExists(err) {
-		return err
-	}
-
-	return nil
 }
 
 func (c *configManager) Read(ctx context.Context) (ConfigData, error) {

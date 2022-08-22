@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/starboard/pkg/starboard"
-	"github.com/onsi/gomega"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
@@ -269,32 +268,6 @@ func TestConfigData_GetScanJobPodTemplateLabels(t *testing.T) {
 		})
 	}
 }
-func TestConfigData_GetComplianceFailEntriesLimit(t *testing.T) {
-	testCases := []struct {
-		name       string
-		configData starboard.ConfigData
-		want       int
-	}{
-		{
-			name:       "Should return compliance fail entries limit default value",
-			configData: starboard.ConfigData{},
-			want:       10,
-		},
-		{
-			name: "Should return compliance fail entries limit from config data",
-			configData: starboard.ConfigData{
-				"compliance.failEntriesLimit": "15",
-			},
-			want: 15,
-		},
-	}
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			gotLimit := tc.configData.ComplianceFailEntriesLimit()
-			assert.Equal(t, tc.want, gotLimit)
-		})
-	}
-}
 
 func TestConfigData_GetKubeBenchImageRef(t *testing.T) {
 	testCases := []struct {
@@ -325,86 +298,6 @@ func TestConfigData_GetKubeBenchImageRef(t *testing.T) {
 			} else {
 				require.NoError(t, err)
 				assert.Equal(t, tc.expectedImageRef, imageRef)
-			}
-		})
-	}
-}
-
-func TestConfigData_GetKubeHunterImageRef(t *testing.T) {
-	testCases := []struct {
-		name             string
-		configData       starboard.ConfigData
-		expectedError    string
-		expectedImageRef string
-	}{
-		{
-			name:          "Should return error",
-			configData:    starboard.ConfigData{},
-			expectedError: "property kube-hunter.imageRef not set",
-		},
-		{
-			name: "Should return image reference from config data",
-			configData: starboard.ConfigData{
-				"kube-hunter.imageRef": "gcr.io/aquasecurity/kube-hunter:0.4.0",
-			},
-			expectedImageRef: "gcr.io/aquasecurity/kube-hunter:0.4.0",
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			imageRef, err := tc.configData.GetKubeHunterImageRef()
-			if tc.expectedError != "" {
-				require.EqualError(t, err, tc.expectedError)
-			} else {
-				require.NoError(t, err)
-				assert.Equal(t, tc.expectedImageRef, imageRef)
-			}
-		})
-	}
-}
-
-func TestConfigData_GetKubeHunterQuick(t *testing.T) {
-	testCases := []struct {
-		name          string
-		configData    starboard.ConfigData
-		expectedError string
-		expectedQuick bool
-	}{
-		{
-			name:          "Should return false when parameter is not set",
-			configData:    starboard.ConfigData{},
-			expectedQuick: false,
-		}, {
-			name: "Should return error when quick is set to something other than \"false\" or \"true\" in config data",
-			configData: starboard.ConfigData{
-				"kube-hunter.quick": "not-a-boolean",
-			},
-			expectedError: "property kube-hunter.quick must be either \"false\" or \"true\", got \"not-a-boolean\"",
-		}, {
-			name: "Should return false when quick is set to \"false\" in config data",
-			configData: starboard.ConfigData{
-				"kube-hunter.quick": "false",
-			},
-			expectedQuick: false,
-		},
-		{
-			name: "Should return true when quick is set to \"true\" in config data",
-			configData: starboard.ConfigData{
-				"kube-hunter.quick": "true",
-			},
-			expectedQuick: true,
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			quick, err := tc.configData.GetKubeHunterQuick()
-			if tc.expectedError != "" {
-				require.EqualError(t, err, tc.expectedError)
-			} else {
-				require.NoError(t, err)
-				assert.Equal(t, tc.expectedQuick, quick)
 			}
 		})
 	}
@@ -475,94 +368,6 @@ func TestConfigManager_Read(t *testing.T) {
 		"foo": "bar",
 		"baz": "s3cret",
 	}, data)
-}
-
-func TestConfigManager_EnsureDefault(t *testing.T) {
-
-	t.Run("Should create ConfigMaps and Secret", func(t *testing.T) {
-		g := gomega.NewGomegaWithT(t)
-
-		namespace := "starboard-ns"
-		clientset := fake.NewSimpleClientset()
-
-		err := starboard.NewConfigManager(clientset, namespace).EnsureDefault(context.TODO())
-		g.Expect(err).ToNot(gomega.HaveOccurred())
-
-		cm, err := clientset.CoreV1().ConfigMaps(namespace).
-			Get(context.TODO(), starboard.ConfigMapName, metav1.GetOptions{})
-		g.Expect(err).ToNot(gomega.HaveOccurred())
-		g.Expect(cm.Data).To(gomega.BeEquivalentTo(starboard.GetDefaultConfig()))
-
-		secret, err := clientset.CoreV1().Secrets(namespace).
-			Get(context.TODO(), starboard.SecretName, metav1.GetOptions{})
-		g.Expect(err).ToNot(gomega.HaveOccurred())
-		g.Expect(secret.Data).To(gomega.BeEmpty())
-	})
-
-	t.Run("Should not modify ConfigMaps nor Secret", func(t *testing.T) {
-		g := gomega.NewGomegaWithT(t)
-		namespace := "starboard-ns"
-		clientset := fake.NewSimpleClientset(
-			&corev1.ConfigMap{
-				ObjectMeta: metav1.ObjectMeta{
-					Namespace: namespace,
-					Name:      starboard.ConfigMapName,
-				},
-				Data: map[string]string{
-					"foo":                        "bar",
-					"configAuditReports.scanner": "Conftest",
-				},
-			},
-			&corev1.Secret{
-				ObjectMeta: metav1.ObjectMeta{
-					Namespace: namespace,
-					Name:      starboard.SecretName,
-				},
-				Data: map[string][]byte{
-					"baz": []byte("s3cret"),
-				},
-			},
-			&corev1.ConfigMap{
-				ObjectMeta: metav1.ObjectMeta{
-					Namespace: namespace,
-					Name:      starboard.GetPluginConfigMapName("Conftest"),
-				},
-				Data: map[string]string{
-					"conftest.policy.my-check.rego": "<REGO>",
-				},
-			},
-		)
-
-		err := starboard.NewConfigManager(clientset, namespace).EnsureDefault(context.TODO())
-		g.Expect(err).ToNot(gomega.HaveOccurred())
-
-		cm, err := clientset.CoreV1().ConfigMaps(namespace).
-			Get(context.TODO(), starboard.ConfigMapName, metav1.GetOptions{})
-		g.Expect(err).ToNot(gomega.HaveOccurred())
-		g.Expect(cm.Data).To(gomega.Equal(map[string]string{
-			"foo":                        "bar",
-			"configAuditReports.scanner": "Conftest",
-		}))
-
-		secret, err := clientset.CoreV1().Secrets(namespace).
-			Get(context.TODO(), starboard.SecretName, metav1.GetOptions{})
-		g.Expect(err).ToNot(gomega.HaveOccurred())
-		g.Expect(secret.Data).To(gomega.Equal(map[string][]byte{
-			"baz": []byte("s3cret"),
-		}))
-
-		pluginConfig, err := clientset.CoreV1().ConfigMaps(namespace).
-			Get(context.TODO(), starboard.GetPluginConfigMapName("Conftest"), metav1.GetOptions{})
-		g.Expect(err).ToNot(gomega.HaveOccurred())
-		g.Expect(pluginConfig.Data).To(gomega.Equal(map[string]string{
-			"conftest.policy.my-check.rego": "<REGO>",
-		}))
-
-		_, err = clientset.CoreV1().ConfigMaps(namespace).
-			Get(context.TODO(), starboard.GetPluginConfigMapName("Polaris"), metav1.GetOptions{})
-		g.Expect(err).To(gomega.MatchError(`configmaps "starboard-polaris-config" not found`))
-	})
-
 }
 
 func TestConfigManager_Delete(t *testing.T) {
