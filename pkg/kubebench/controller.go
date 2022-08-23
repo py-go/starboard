@@ -1,4 +1,4 @@
-package controller
+package kubebench
 
 import (
 	. "github.com/danielpacak/kube-security-manager/pkg/operator/predicate"
@@ -8,7 +8,7 @@ import (
 
 	"github.com/danielpacak/kube-security-manager/pkg/apis/aquasecurity/v1alpha1"
 	"github.com/danielpacak/kube-security-manager/pkg/kube"
-	"github.com/danielpacak/kube-security-manager/pkg/kubebench"
+	"github.com/danielpacak/kube-security-manager/pkg/operator/controller"
 	"github.com/danielpacak/kube-security-manager/pkg/operator/etc"
 	"github.com/danielpacak/kube-security-manager/pkg/starboard"
 	"github.com/go-logr/logr"
@@ -24,7 +24,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-// CISKubeBenchReportReconciler reconciles corev1.Node and corev1.Job objects
+// NodeController reconciles corev1.Node and corev1.Job objects
 // to check cluster nodes configuration with CIS Kubernetes Benchmark and saves
 // results as v1alpha1.CISKubeBenchReport objects.
 // Each v1alpha1.CISKubeBenchReport is controlled by the corev1.Node for which
@@ -33,18 +33,18 @@ import (
 // own benchmark reports, so that it will automatically call the reconcile
 // callback on the underlying corev1.Node when a v1alpha1.CISKubeBenchReport
 // changes, is deleted, etc.
-type CISKubeBenchReportReconciler struct {
+type NodeController struct {
 	logr.Logger
 	etc.Config
 	client.Client
 	kube.LogsReader
-	LimitChecker
-	kubebench.ReadWriter
-	kubebench.Plugin
+	controller.LimitChecker
+	ReadWriter
+	Plugin
 	starboard.ConfigData
 }
 
-func (r *CISKubeBenchReportReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *NodeController) SetupWithManager(mgr ctrl.Manager) error {
 	err := ctrl.NewControllerManagedBy(mgr).
 		For(&corev1.Node{}, builder.WithPredicates(IsLinuxNode)).
 		Owns(&v1alpha1.CISKubeBenchReport{}).
@@ -62,7 +62,7 @@ func (r *CISKubeBenchReportReconciler) SetupWithManager(mgr ctrl.Manager) error 
 		Complete(r.reconcileJobs())
 }
 
-func (r *CISKubeBenchReportReconciler) reconcileNodes() reconcile.Func {
+func (r *NodeController) reconcileNodes() reconcile.Func {
 	return func(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 		log := r.Logger.WithValues("node", req.NamespacedName)
 
@@ -129,7 +129,7 @@ func (r *CISKubeBenchReportReconciler) reconcileNodes() reconcile.Func {
 	}
 }
 
-func (r *CISKubeBenchReportReconciler) hasReport(ctx context.Context, node *corev1.Node) (bool, error) {
+func (r *NodeController) hasReport(ctx context.Context, node *corev1.Node) (bool, error) {
 	report, err := r.ReadWriter.FindByOwner(ctx, kube.ObjectRef{Kind: kube.KindNode, Name: node.Name})
 	if err != nil {
 		return false, err
@@ -137,7 +137,7 @@ func (r *CISKubeBenchReportReconciler) hasReport(ctx context.Context, node *core
 	return report != nil, nil
 }
 
-func (r *CISKubeBenchReportReconciler) hasScanJob(ctx context.Context, node *corev1.Node) (bool, *batchv1.Job, error) {
+func (r *NodeController) hasScanJob(ctx context.Context, node *corev1.Node) (bool, *batchv1.Job, error) {
 	jobName := r.getScanJobName(node)
 	job := &batchv1.Job{}
 	err := r.Client.Get(ctx, client.ObjectKey{Namespace: r.Config.Namespace, Name: jobName}, job)
@@ -150,7 +150,7 @@ func (r *CISKubeBenchReportReconciler) hasScanJob(ctx context.Context, node *cor
 	return true, job, nil
 }
 
-func (r *CISKubeBenchReportReconciler) newScanJob(node *corev1.Node) (*batchv1.Job, error) {
+func (r *NodeController) newScanJob(node *corev1.Node) (*batchv1.Job, error) {
 	templateSpec, err := r.Plugin.GetScanJobSpec(*node)
 	if err != nil {
 		return nil, err
@@ -210,11 +210,11 @@ func (r *CISKubeBenchReportReconciler) newScanJob(node *corev1.Node) (*batchv1.J
 	}, nil
 }
 
-func (r *CISKubeBenchReportReconciler) getScanJobName(node *corev1.Node) string {
+func (r *NodeController) getScanJobName(node *corev1.Node) string {
 	return "scan-cisbenchmark-" + kube.ComputeHash(node.Name)
 }
 
-func (r *CISKubeBenchReportReconciler) reconcileJobs() reconcile.Func {
+func (r *NodeController) reconcileJobs() reconcile.Func {
 	return func(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 		log := r.Logger.WithValues("job", req.NamespacedName)
 
@@ -247,7 +247,7 @@ func (r *CISKubeBenchReportReconciler) reconcileJobs() reconcile.Func {
 	}
 }
 
-func (r *CISKubeBenchReportReconciler) processCompleteScanJob(ctx context.Context, job *batchv1.Job) error {
+func (r *NodeController) processCompleteScanJob(ctx context.Context, job *batchv1.Job) error {
 	log := r.Logger.WithValues("job", fmt.Sprintf("%s/%s", job.Namespace, job.Name))
 
 	nodeRef, err := kube.ObjectRefFromObjectMeta(job.ObjectMeta)
@@ -296,7 +296,7 @@ func (r *CISKubeBenchReportReconciler) processCompleteScanJob(ctx context.Contex
 		_ = logsStream.Close()
 	}()
 
-	report, err := kubebench.NewBuilder(r.Client.Scheme()).
+	report, err := NewBuilder(r.Client.Scheme()).
 		Controller(node).
 		Data(output).
 		Get()
@@ -313,7 +313,7 @@ func (r *CISKubeBenchReportReconciler) processCompleteScanJob(ctx context.Contex
 	return r.deleteJob(ctx, job)
 }
 
-func (r *CISKubeBenchReportReconciler) deleteJob(ctx context.Context, job *batchv1.Job) error {
+func (r *NodeController) deleteJob(ctx context.Context, job *batchv1.Job) error {
 	err := r.Client.Delete(ctx, job, client.PropagationPolicy(metav1.DeletePropagationBackground))
 	if err != nil {
 		if errors.IsNotFound(err) {
@@ -324,7 +324,7 @@ func (r *CISKubeBenchReportReconciler) deleteJob(ctx context.Context, job *batch
 	return nil
 }
 
-func (r *CISKubeBenchReportReconciler) processFailedScanJob(ctx context.Context, job *batchv1.Job) error {
+func (r *NodeController) processFailedScanJob(ctx context.Context, job *batchv1.Job) error {
 	log := r.Logger.WithValues("job", fmt.Sprintf("%s/%s", job.Namespace, job.Name))
 
 	statuses, err := r.LogsReader.GetTerminatedContainersStatusesByJob(ctx, job)

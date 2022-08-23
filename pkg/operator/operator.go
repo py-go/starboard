@@ -171,7 +171,7 @@ func Start(ctx context.Context, buildInfo starboard.BuildInfo, operatorConfig et
 	}
 
 	if operatorConfig.CISKubernetesBenchmarkEnabled {
-		if err = (&controller.CISKubeBenchReportReconciler{
+		if err = (&kubebench.NodeController{
 			Logger:       ctrl.Log.WithName("reconciler").WithName("ciskubebenchreport"),
 			Config:       operatorConfig,
 			ConfigData:   starboardConfig,
