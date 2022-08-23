@@ -3,25 +3,19 @@
 package v1alpha1
 
 import (
-	internalinterfaces "github.com/aquasecurity/starboard/pkg/generated/informers/externalversions/internalinterfaces"
+	internalinterfaces "github.com/danielpacak/kube-security-manager/pkg/generated/informers/externalversions/internalinterfaces"
 )
 
 // Interface provides access to all the informers in this group version.
 type Interface interface {
 	// CISKubeBenchReports returns a CISKubeBenchReportInformer.
 	CISKubeBenchReports() CISKubeBenchReportInformer
-	// ClusterComplianceDetailReports returns a ClusterComplianceDetailReportInformer.
-	ClusterComplianceDetailReports() ClusterComplianceDetailReportInformer
-	// ClusterComplianceReports returns a ClusterComplianceReportInformer.
-	ClusterComplianceReports() ClusterComplianceReportInformer
 	// ClusterConfigAuditReports returns a ClusterConfigAuditReportInformer.
 	ClusterConfigAuditReports() ClusterConfigAuditReportInformer
 	// ClusterVulnerabilityReports returns a ClusterVulnerabilityReportInformer.
 	ClusterVulnerabilityReports() ClusterVulnerabilityReportInformer
 	// ConfigAuditReports returns a ConfigAuditReportInformer.
 	ConfigAuditReports() ConfigAuditReportInformer
-	// KubeHunterReports returns a KubeHunterReportInformer.
-	KubeHunterReports() KubeHunterReportInformer
 	// VulnerabilityReports returns a VulnerabilityReportInformer.
 	VulnerabilityReports() VulnerabilityReportInformer
 }
@@ -42,16 +36,6 @@ func (v *version) CISKubeBenchReports() CISKubeBenchReportInformer {
 	return &cISKubeBenchReportInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
 
-// ClusterComplianceDetailReports returns a ClusterComplianceDetailReportInformer.
-func (v *version) ClusterComplianceDetailReports() ClusterComplianceDetailReportInformer {
-	return &clusterComplianceDetailReportInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
-// ClusterComplianceReports returns a ClusterComplianceReportInformer.
-func (v *version) ClusterComplianceReports() ClusterComplianceReportInformer {
-	return &clusterComplianceReportInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
 // ClusterConfigAuditReports returns a ClusterConfigAuditReportInformer.
 func (v *version) ClusterConfigAuditReports() ClusterConfigAuditReportInformer {
 	return &clusterConfigAuditReportInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
@@ -65,11 +49,6 @@ func (v *version) ClusterVulnerabilityReports() ClusterVulnerabilityReportInform
 // ConfigAuditReports returns a ConfigAuditReportInformer.
 func (v *version) ConfigAuditReports() ConfigAuditReportInformer {
 	return &configAuditReportInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
-// KubeHunterReports returns a KubeHunterReportInformer.
-func (v *version) KubeHunterReports() KubeHunterReportInformer {
-	return &kubeHunterReportInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
 
 // VulnerabilityReports returns a VulnerabilityReportInformer.

@@ -6,22 +6,6 @@ package v1alpha1
 // CISKubeBenchReportLister.
 type CISKubeBenchReportListerExpansion interface{}
 
-// ClusterComplianceDetailReportListerExpansion allows custom methods to be added to
-// ClusterComplianceDetailReportLister.
-type ClusterComplianceDetailReportListerExpansion interface{}
-
-// ClusterComplianceDetailReportNamespaceListerExpansion allows custom methods to be added to
-// ClusterComplianceDetailReportNamespaceLister.
-type ClusterComplianceDetailReportNamespaceListerExpansion interface{}
-
-// ClusterComplianceReportListerExpansion allows custom methods to be added to
-// ClusterComplianceReportLister.
-type ClusterComplianceReportListerExpansion interface{}
-
-// ClusterComplianceReportNamespaceListerExpansion allows custom methods to be added to
-// ClusterComplianceReportNamespaceLister.
-type ClusterComplianceReportNamespaceListerExpansion interface{}
-
 // ClusterConfigAuditReportListerExpansion allows custom methods to be added to
 // ClusterConfigAuditReportLister.
 type ClusterConfigAuditReportListerExpansion interface{}
@@ -37,10 +21,6 @@ type ConfigAuditReportListerExpansion interface{}
 // ConfigAuditReportNamespaceListerExpansion allows custom methods to be added to
 // ConfigAuditReportNamespaceLister.
 type ConfigAuditReportNamespaceListerExpansion interface{}
-
-// KubeHunterReportListerExpansion allows custom methods to be added to
-// KubeHunterReportLister.
-type KubeHunterReportListerExpansion interface{}
 
 // VulnerabilityReportListerExpansion allows custom methods to be added to
 // VulnerabilityReportLister.

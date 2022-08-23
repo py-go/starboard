@@ -1,4 +1,4 @@
-module github.com/aquasecurity/starboard
+module github.com/danielpacak/kube-security-manager
 
 go 1.19
 

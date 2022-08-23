@@ -3,7 +3,7 @@ package kubebench
 import (
 	"io"
 
-	"github.com/aquasecurity/starboard/pkg/apis/aquasecurity/v1alpha1"
+	"github.com/danielpacak/kube-security-manager/pkg/apis/aquasecurity/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 )
 

@@ -5,7 +5,7 @@ package externalversions
 import (
 	"fmt"
 
-	v1alpha1 "github.com/aquasecurity/starboard/pkg/apis/aquasecurity/v1alpha1"
+	v1alpha1 "github.com/danielpacak/kube-security-manager/pkg/apis/aquasecurity/v1alpha1"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	cache "k8s.io/client-go/tools/cache"
 )
@@ -39,18 +39,12 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 	// Group=aquasecurity.github.io, Version=v1alpha1
 	case v1alpha1.SchemeGroupVersion.WithResource("ciskubebenchreports"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Aquasecurity().V1alpha1().CISKubeBenchReports().Informer()}, nil
-	case v1alpha1.SchemeGroupVersion.WithResource("clustercompliancedetailreports"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Aquasecurity().V1alpha1().ClusterComplianceDetailReports().Informer()}, nil
-	case v1alpha1.SchemeGroupVersion.WithResource("clustercompliancereports"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Aquasecurity().V1alpha1().ClusterComplianceReports().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("clusterconfigauditreports"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Aquasecurity().V1alpha1().ClusterConfigAuditReports().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("clustervulnerabilityreports"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Aquasecurity().V1alpha1().ClusterVulnerabilityReports().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("configauditreports"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Aquasecurity().V1alpha1().ConfigAuditReports().Informer()}, nil
-	case v1alpha1.SchemeGroupVersion.WithResource("kubehunterreports"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Aquasecurity().V1alpha1().KubeHunterReports().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("vulnerabilityreports"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Aquasecurity().V1alpha1().VulnerabilityReports().Informer()}, nil
 

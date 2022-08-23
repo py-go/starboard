@@ -1,7 +1,7 @@
 package v1alpha1
 
 import (
-	"github.com/aquasecurity/starboard/pkg/apis/aquasecurity"
+	"github.com/danielpacak/kube-security-manager/pkg/apis/aquasecurity"
 	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -36,16 +36,10 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&ClusterVulnerabilityReportList{},
 		&CISKubeBenchReport{},
 		&CISKubeBenchReportList{},
-		&KubeHunterReport{},
-		&KubeHunterReportList{},
 		&ConfigAuditReport{},
 		&ConfigAuditReportList{},
 		&ClusterConfigAuditReport{},
 		&ClusterConfigAuditReportList{},
-		&ClusterComplianceReport{},
-		&ClusterComplianceReportList{},
-		&ClusterComplianceDetailReport{},
-		&ClusterComplianceDetailReportList{},
 	)
 	meta.AddToGroupVersion(scheme, SchemeGroupVersion)
 	return nil

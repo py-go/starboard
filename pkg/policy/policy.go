@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/aquasecurity/starboard/pkg/apis/aquasecurity/v1alpha1"
-	"github.com/aquasecurity/starboard/pkg/kube"
+	"github.com/danielpacak/kube-security-manager/pkg/apis/aquasecurity/v1alpha1"
+	"github.com/danielpacak/kube-security-manager/pkg/kube"
 	"github.com/open-policy-agent/opa/ast"
 	"github.com/open-policy-agent/opa/rego"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -206,7 +206,8 @@ func (p *Policies) Applicable(resource client.Object) (bool, string, error) {
 // Eval evaluates Rego policies with Kubernetes resource client.Object as input.
 //
 // TODO(danielpacak) Compile and cache prepared queries to make Eval more efficient.
-//                   We can reuse prepared queries so long policies do not change.
+//
+//	We can reuse prepared queries so long policies do not change.
 func (p *Policies) Eval(ctx context.Context, resource client.Object) (Results, error) {
 	if resource == nil {
 		return nil, fmt.Errorf("resource must not be nil")

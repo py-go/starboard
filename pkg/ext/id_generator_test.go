@@ -3,7 +3,7 @@ package ext_test
 import (
 	"testing"
 
-	"github.com/aquasecurity/starboard/pkg/ext"
+	"github.com/danielpacak/kube-security-manager/pkg/ext"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/aquasecurity/starboard/pkg/operator"
-	"github.com/aquasecurity/starboard/pkg/operator/etc"
-	"github.com/aquasecurity/starboard/pkg/starboard"
-	ctrl "sigs.k8s.io/controller-runtime"
+	"github.com/danielpacak/kube-security-manager/pkg/operator"
+	"github.com/danielpacak/kube-security-manager/pkg/operator/etc"
+	"github.com/danielpacak/kube-security-manager/pkg/starboard"
+	"sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 )
@@ -47,5 +47,5 @@ func run() error {
 
 	setupLog.Info("Starting operator", "buildInfo", buildInfo)
 
-	return operator.Start(ctrl.SetupSignalHandler(), buildInfo, operatorConfig)
+	return operator.Start(controllerruntime.SetupSignalHandler(), buildInfo, operatorConfig)
 }

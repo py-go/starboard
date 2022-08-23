@@ -5,20 +5,17 @@ package v1alpha1
 import (
 	"net/http"
 
-	v1alpha1 "github.com/aquasecurity/starboard/pkg/apis/aquasecurity/v1alpha1"
-	"github.com/aquasecurity/starboard/pkg/generated/clientset/versioned/scheme"
+	v1alpha1 "github.com/danielpacak/kube-security-manager/pkg/apis/aquasecurity/v1alpha1"
+	"github.com/danielpacak/kube-security-manager/pkg/generated/clientset/versioned/scheme"
 	rest "k8s.io/client-go/rest"
 )
 
 type AquasecurityV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	CISKubeBenchReportsGetter
-	ClusterComplianceDetailReportsGetter
-	ClusterComplianceReportsGetter
 	ClusterConfigAuditReportsGetter
 	ClusterVulnerabilityReportsGetter
 	ConfigAuditReportsGetter
-	KubeHunterReportsGetter
 	VulnerabilityReportsGetter
 }
 
@@ -31,14 +28,6 @@ func (c *AquasecurityV1alpha1Client) CISKubeBenchReports() CISKubeBenchReportInt
 	return newCISKubeBenchReports(c)
 }
 
-func (c *AquasecurityV1alpha1Client) ClusterComplianceDetailReports(namespace string) ClusterComplianceDetailReportInterface {
-	return newClusterComplianceDetailReports(c, namespace)
-}
-
-func (c *AquasecurityV1alpha1Client) ClusterComplianceReports(namespace string) ClusterComplianceReportInterface {
-	return newClusterComplianceReports(c, namespace)
-}
-
 func (c *AquasecurityV1alpha1Client) ClusterConfigAuditReports() ClusterConfigAuditReportInterface {
 	return newClusterConfigAuditReports(c)
 }
@@ -49,10 +38,6 @@ func (c *AquasecurityV1alpha1Client) ClusterVulnerabilityReports() ClusterVulner
 
 func (c *AquasecurityV1alpha1Client) ConfigAuditReports(namespace string) ConfigAuditReportInterface {
 	return newConfigAuditReports(c, namespace)
-}
-
-func (c *AquasecurityV1alpha1Client) KubeHunterReports() KubeHunterReportInterface {
-	return newKubeHunterReports(c)
 }
 
 func (c *AquasecurityV1alpha1Client) VulnerabilityReports(namespace string) VulnerabilityReportInterface {

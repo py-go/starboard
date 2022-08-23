@@ -3,10 +3,10 @@ package plugin
 import (
 	"fmt"
 
-	"github.com/aquasecurity/starboard/pkg/ext"
-	"github.com/aquasecurity/starboard/pkg/plugin/trivy"
-	"github.com/aquasecurity/starboard/pkg/starboard"
-	"github.com/aquasecurity/starboard/pkg/vulnerabilityreport"
+	"github.com/danielpacak/kube-security-manager/pkg/ext"
+	"github.com/danielpacak/kube-security-manager/pkg/plugin/trivy"
+	"github.com/danielpacak/kube-security-manager/pkg/starboard"
+	"github.com/danielpacak/kube-security-manager/pkg/vulnerabilityreport"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 

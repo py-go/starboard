@@ -1,7 +1,7 @@
 package starboard_operator
 
 import (
-	. "github.com/aquasecurity/starboard/itest/starboard-operator/behavior"
+	. "github.com/danielpacak/kube-security-manager/itest/starboard-operator/behavior"
 	. "github.com/onsi/ginkgo"
 )
 

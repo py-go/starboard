@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/aquasecurity/starboard/pkg/starboard"
+	"github.com/danielpacak/kube-security-manager/pkg/starboard"
 	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
 	batchv1beta1 "k8s.io/api/batch/v1beta1"
@@ -411,7 +411,7 @@ func (o *ObjectResolver) ReplicaSetByDeploymentRef(ctx context.Context, deployme
 
 // ReplicaSetByDeployment returns the current revision of the specified
 // Deployment. If the current revision cannot be found the ErrReplicaSetNotFound
-//error is returned.
+// error is returned.
 func (o *ObjectResolver) ReplicaSetByDeployment(ctx context.Context, deployment *appsv1.Deployment) (*appsv1.ReplicaSet, error) {
 	var rsList appsv1.ReplicaSetList
 	err := o.Client.List(ctx, &rsList,

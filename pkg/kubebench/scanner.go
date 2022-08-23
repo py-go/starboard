@@ -1,163 +1,17 @@
 package kubebench
 
 import (
-	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 
-	"github.com/aquasecurity/starboard/pkg/apis/aquasecurity/v1alpha1"
-	"github.com/aquasecurity/starboard/pkg/ext"
-	"github.com/aquasecurity/starboard/pkg/kube"
-	"github.com/aquasecurity/starboard/pkg/runner"
-	"github.com/aquasecurity/starboard/pkg/starboard"
-	batchv1 "k8s.io/api/batch/v1"
+	"github.com/danielpacak/kube-security-manager/pkg/apis/aquasecurity/v1alpha1"
+	"github.com/danielpacak/kube-security-manager/pkg/ext"
+	"github.com/danielpacak/kube-security-manager/pkg/starboard"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/klog/v2"
 	"k8s.io/utils/pointer"
 )
-
-type Scanner struct {
-	scheme     *runtime.Scheme
-	clientset  kubernetes.Interface
-	logsReader kube.LogsReader
-	plugin     Plugin
-	config     starboard.ConfigData
-	opts       kube.ScannerOpts
-}
-
-func NewScanner(
-	scheme *runtime.Scheme,
-	clientset kubernetes.Interface,
-	plugin Plugin,
-	config starboard.ConfigData,
-	opts kube.ScannerOpts,
-) *Scanner {
-	return &Scanner{
-		scheme:     scheme,
-		clientset:  clientset,
-		logsReader: kube.NewLogsReader(clientset),
-		plugin:     plugin,
-		config:     config,
-		opts:       opts,
-	}
-}
-
-func (s *Scanner) Scan(ctx context.Context, node corev1.Node) (v1alpha1.CISKubeBenchReport, error) {
-	// 1. Prepare descriptor for the Kubernetes Job which will run kube-bench
-	job, err := s.prepareKubeBenchJob(node)
-	if err != nil {
-		return v1alpha1.CISKubeBenchReport{}, err
-	}
-
-	// 2. Run the prepared Job and wait for its completion or failure
-	err = runner.New().Run(ctx, kube.NewRunnableJob(s.scheme, s.clientset, job))
-	if err != nil {
-		return v1alpha1.CISKubeBenchReport{}, fmt.Errorf("running kube-bench job: %w", err)
-	}
-
-	defer func() {
-		if !s.opts.DeleteScanJob {
-			klog.V(3).Infof("Skipping scan job deletion: %s/%s", job.Namespace, job.Name)
-			return
-		}
-		// 5. Delete the kube-bench Job
-		klog.V(3).Infof("Deleting job %q", job.Namespace+"/"+job.Name)
-		background := metav1.DeletePropagationBackground
-		_ = s.clientset.BatchV1().Jobs(job.Namespace).Delete(ctx, job.Name, metav1.DeleteOptions{
-			PropagationPolicy: &background,
-		})
-	}()
-
-	containerName := s.plugin.GetContainerName()
-	// 3. Get kube-bench JSON output from the kube-bench Pod
-	klog.V(3).Infof("Getting logs for %q container in job %q", containerName,
-		job.Namespace+"/"+job.Name)
-	logsStream, err := s.logsReader.GetLogsByJobAndContainerName(ctx, job, containerName)
-	if err != nil {
-		return v1alpha1.CISKubeBenchReport{}, fmt.Errorf("getting logs: %w", err)
-	}
-	defer func() {
-		_ = logsStream.Close()
-	}()
-
-	// 4. Parse the CISBenchmarkReport from the logs Reader
-	output, err := s.plugin.ParseCISKubeBenchReportData(logsStream)
-	if err != nil {
-		return v1alpha1.CISKubeBenchReport{}, err
-	}
-
-	report, err := NewBuilder(s.scheme).
-		Controller(&node).
-		Data(output).
-		Get()
-	if err != nil {
-		return v1alpha1.CISKubeBenchReport{}, fmt.Errorf("building report: %w", err)
-	}
-
-	return report, nil
-}
-
-func (s *Scanner) prepareKubeBenchJob(node corev1.Node) (*batchv1.Job, error) {
-	templateSpec, err := s.plugin.GetScanJobSpec(node)
-	if err != nil {
-		return nil, err
-	}
-
-	scanJobTolerations, err := s.config.GetScanJobTolerations()
-	if err != nil {
-		return nil, err
-	}
-	templateSpec.Tolerations = append(templateSpec.Tolerations, scanJobTolerations...)
-
-	scanJobAnnotations, err := s.config.GetScanJobAnnotations()
-	if err != nil {
-		return nil, err
-	}
-
-	scanJobPodTemplateLabels, err := s.config.GetScanJobPodTemplateLabels()
-	if err != nil {
-		return nil, err
-	}
-
-	labelsSet := labels.Set{
-		starboard.LabelResourceKind: string(kube.KindNode),
-		starboard.LabelResourceName: node.Name,
-	}
-
-	podTemplateLabelsSet := make(labels.Set)
-	for index, element := range labelsSet {
-		podTemplateLabelsSet[index] = element
-	}
-	for index, element := range scanJobPodTemplateLabels {
-		podTemplateLabelsSet[index] = element
-	}
-
-	return &batchv1.Job{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "scan-cisbenchmark-" + kube.ComputeHash(node.Name),
-			Namespace: starboard.NamespaceName,
-			Labels:    labelsSet,
-		},
-		Spec: batchv1.JobSpec{
-			BackoffLimit:          pointer.Int32Ptr(0),
-			Completions:           pointer.Int32Ptr(1),
-			ActiveDeadlineSeconds: kube.GetActiveDeadlineSeconds(s.opts.ScanJobTimeout),
-			Template: corev1.PodTemplateSpec{
-				ObjectMeta: metav1.ObjectMeta{
-					Labels:      podTemplateLabelsSet,
-					Annotations: scanJobAnnotations,
-				},
-				Spec: templateSpec,
-			},
-		},
-	}, nil
-}
 
 const (
 	kubeBenchContainerName = "kube-bench"

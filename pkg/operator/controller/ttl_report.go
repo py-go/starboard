@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/aquasecurity/starboard/pkg/ext"
-	"github.com/aquasecurity/starboard/pkg/utils"
-
-	"github.com/aquasecurity/starboard/pkg/apis/aquasecurity/v1alpha1"
-	"github.com/aquasecurity/starboard/pkg/operator/etc"
-	"github.com/aquasecurity/starboard/pkg/operator/predicate"
+	"github.com/danielpacak/kube-security-manager/pkg/apis/aquasecurity/v1alpha1"
+	"github.com/danielpacak/kube-security-manager/pkg/ext"
+	"github.com/danielpacak/kube-security-manager/pkg/operator/etc"
+	"github.com/danielpacak/kube-security-manager/pkg/operator/predicate"
+	"github.com/danielpacak/kube-security-manager/pkg/utils"
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/api/errors"
 	ctrl "sigs.k8s.io/controller-runtime"

@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"hash"
 	"hash/fnv"
+	"k8s.io/utils/pointer"
+	"time"
 
-	"github.com/aquasecurity/starboard/pkg/starboard"
+	"github.com/danielpacak/kube-security-manager/pkg/starboard"
 	"github.com/davecgh/go-spew/spew"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -61,4 +63,11 @@ func DeepHashObject(hasher hash.Hash, objectToWrite interface{}) {
 		SpewKeys:       true,
 	}
 	printer.Fprintf(hasher, "%#v", objectToWrite)
+}
+
+func GetActiveDeadlineSeconds(d time.Duration) *int64 {
+	if d > 0 {
+		return pointer.Int64Ptr(int64(d.Seconds()))
+	}
+	return nil
 }

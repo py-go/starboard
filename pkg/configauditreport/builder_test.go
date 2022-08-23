@@ -1,20 +1,16 @@
 package configauditreport_test
 
 import (
-	"encoding/json"
-	"fmt"
 	. "github.com/onsi/gomega"
 
 	"io"
 	"testing"
-	"time"
 
-	"github.com/aquasecurity/starboard/pkg/apis/aquasecurity/v1alpha1"
-	"github.com/aquasecurity/starboard/pkg/configauditreport"
-	"github.com/aquasecurity/starboard/pkg/kube"
-	"github.com/aquasecurity/starboard/pkg/starboard"
+	"github.com/danielpacak/kube-security-manager/pkg/apis/aquasecurity/v1alpha1"
+	"github.com/danielpacak/kube-security-manager/pkg/configauditreport"
+	"github.com/danielpacak/kube-security-manager/pkg/kube"
+	"github.com/danielpacak/kube-security-manager/pkg/starboard"
 	appsv1 "k8s.io/api/apps/v1"
-	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -147,138 +143,4 @@ func (p *testPlugin) GetContainerName() string {
 
 func (p *testPlugin) ConfigHash(_ starboard.PluginContext, _ kube.Kind) (string, error) {
 	return p.configHash, nil
-}
-
-func TestScanJobBuilder(t *testing.T) {
-
-	t.Run("Should build scan job for resource with simple name", func(t *testing.T) {
-		g := NewGomegaWithT(t)
-		job, _, err := configauditreport.NewScanJobBuilder().
-			WithPlugin(&testPlugin{
-				configHash: "hash-test",
-			}).
-			WithPluginContext(starboard.NewPluginContext().
-				WithName("plugin-test").
-				WithNamespace("starboard-ns").
-				WithServiceAccountName("starboard-sa").
-				Get()).
-			WithTimeout(3 * time.Second).
-			WithObject(&appsv1.ReplicaSet{
-				TypeMeta: metav1.TypeMeta{
-					Kind:       "ReplicaSet",
-					APIVersion: "apps/v1",
-				},
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      "nginx-6799fc88d8",
-					Namespace: "prod-ns",
-				},
-			}).
-			Get()
-		g.Expect(err).ToNot(HaveOccurred())
-		g.Expect(job).To(Equal(&batchv1.Job{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "scan-configauditreport-64d65c457",
-				Namespace: "starboard-ns",
-				Labels: map[string]string{
-					starboard.LabelResourceSpecHash:         "755877d4bb",
-					starboard.LabelPluginConfigHash:         "hash-test",
-					starboard.LabelConfigAuditReportScanner: "plugin-test",
-					starboard.LabelK8SAppManagedBy:          "starboard",
-					starboard.LabelResourceKind:             "ReplicaSet",
-					starboard.LabelResourceName:             "nginx-6799fc88d8",
-					starboard.LabelResourceNamespace:        "prod-ns",
-				},
-			},
-			Spec: batchv1.JobSpec{
-				BackoffLimit:          pointer.Int32Ptr(0),
-				Completions:           pointer.Int32Ptr(1),
-				ActiveDeadlineSeconds: pointer.Int64Ptr(3),
-				Template: corev1.PodTemplateSpec{
-					ObjectMeta: metav1.ObjectMeta{
-						Labels: map[string]string{
-							starboard.LabelResourceSpecHash:         "755877d4bb",
-							starboard.LabelPluginConfigHash:         "hash-test",
-							starboard.LabelConfigAuditReportScanner: "plugin-test",
-							starboard.LabelK8SAppManagedBy:          "starboard",
-							starboard.LabelResourceKind:             "ReplicaSet",
-							starboard.LabelResourceName:             "nginx-6799fc88d8",
-							starboard.LabelResourceNamespace:        "prod-ns",
-						},
-					},
-					Spec: corev1.PodSpec{},
-				},
-			},
-		}))
-	})
-
-	t.Run("Should build scan job for resource with special name", func(t *testing.T) {
-		g := NewGomegaWithT(t)
-		job, _, err := configauditreport.NewScanJobBuilder().
-			WithPlugin(&testPlugin{
-				configHash: "hash-test",
-			}).
-			WithPluginContext(starboard.NewPluginContext().
-				WithName("plugin-test").
-				WithNamespace("starboard-ns").
-				WithServiceAccountName("starboard-sa").
-				Get()).
-			WithTimeout(3 * time.Second).
-			WithObject(&rbacv1.ClusterRole{
-				TypeMeta: metav1.TypeMeta{
-					Kind:       "ClusterRole",
-					APIVersion: "rbac.authorization.k8s.io/v1",
-				},
-				ObjectMeta: metav1.ObjectMeta{
-					Name: "system:controller:node-controller",
-				},
-			}).
-			Get()
-		g.Expect(err).ToNot(HaveOccurred())
-		g.Expect(job).NotTo(BeNil())
-		b, err := json.Marshal(job)
-		if err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println(string(b))
-		g.Expect(job).To(Equal(&batchv1.Job{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "scan-configauditreport-5bfbdd65c9",
-				Namespace: "starboard-ns",
-				Labels: map[string]string{
-					starboard.LabelResourceSpecHash:         "66f8596c77",
-					starboard.LabelPluginConfigHash:         "hash-test",
-					starboard.LabelConfigAuditReportScanner: "plugin-test",
-					starboard.LabelK8SAppManagedBy:          "starboard",
-					starboard.LabelResourceKind:             "ClusterRole",
-					starboard.LabelResourceNameHash:         "6f69bb5b79",
-					starboard.LabelResourceNamespace:        "",
-				},
-				Annotations: map[string]string{
-					starboard.LabelResourceName: "system:controller:node-controller",
-				},
-			},
-			Spec: batchv1.JobSpec{
-				BackoffLimit:          pointer.Int32Ptr(0),
-				Completions:           pointer.Int32Ptr(1),
-				ActiveDeadlineSeconds: pointer.Int64Ptr(3),
-				Template: corev1.PodTemplateSpec{
-					ObjectMeta: metav1.ObjectMeta{
-						Labels: map[string]string{
-							starboard.LabelResourceSpecHash:         "66f8596c77",
-							starboard.LabelPluginConfigHash:         "hash-test",
-							starboard.LabelConfigAuditReportScanner: "plugin-test",
-							starboard.LabelK8SAppManagedBy:          "starboard",
-							starboard.LabelResourceKind:             "ClusterRole",
-							starboard.LabelResourceNameHash:         "6f69bb5b79",
-							starboard.LabelResourceNamespace:        "",
-						},
-						Annotations: map[string]string{
-							starboard.LabelResourceName: "system:controller:node-controller",
-						},
-					},
-					Spec: corev1.PodSpec{},
-				},
-			},
-		}))
-	})
 }

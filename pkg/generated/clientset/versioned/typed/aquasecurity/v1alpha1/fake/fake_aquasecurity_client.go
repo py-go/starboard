@@ -3,7 +3,7 @@
 package fake
 
 import (
-	v1alpha1 "github.com/aquasecurity/starboard/pkg/generated/clientset/versioned/typed/aquasecurity/v1alpha1"
+	v1alpha1 "github.com/danielpacak/kube-security-manager/pkg/generated/clientset/versioned/typed/aquasecurity/v1alpha1"
 	rest "k8s.io/client-go/rest"
 	testing "k8s.io/client-go/testing"
 )
@@ -16,14 +16,6 @@ func (c *FakeAquasecurityV1alpha1) CISKubeBenchReports() v1alpha1.CISKubeBenchRe
 	return &FakeCISKubeBenchReports{c}
 }
 
-func (c *FakeAquasecurityV1alpha1) ClusterComplianceDetailReports(namespace string) v1alpha1.ClusterComplianceDetailReportInterface {
-	return &FakeClusterComplianceDetailReports{c, namespace}
-}
-
-func (c *FakeAquasecurityV1alpha1) ClusterComplianceReports(namespace string) v1alpha1.ClusterComplianceReportInterface {
-	return &FakeClusterComplianceReports{c, namespace}
-}
-
 func (c *FakeAquasecurityV1alpha1) ClusterConfigAuditReports() v1alpha1.ClusterConfigAuditReportInterface {
 	return &FakeClusterConfigAuditReports{c}
 }
@@ -34,10 +26,6 @@ func (c *FakeAquasecurityV1alpha1) ClusterVulnerabilityReports() v1alpha1.Cluste
 
 func (c *FakeAquasecurityV1alpha1) ConfigAuditReports(namespace string) v1alpha1.ConfigAuditReportInterface {
 	return &FakeConfigAuditReports{c, namespace}
-}
-
-func (c *FakeAquasecurityV1alpha1) KubeHunterReports() v1alpha1.KubeHunterReportInterface {
-	return &FakeKubeHunterReports{c}
 }
 
 func (c *FakeAquasecurityV1alpha1) VulnerabilityReports(namespace string) v1alpha1.VulnerabilityReportInterface {
