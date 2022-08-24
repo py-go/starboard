@@ -38,9 +38,9 @@ configure it to watch the `default` namespaces:
    ```
 4. (Optional) Configure Starboard by creating the `starboard` ConfigMap and the `starboard` secret in
    the `starboard-system` namespace. For example, you can use Trivy
-   in [ClientServer](./../../vulnerability-scanning/trivy.md#clientserver) mode or
+   in [ClientServer](../vulnerability-scanning/trivy.md#clientserver) mode or
    [Aqua Enterprise](./../../vulnerability-scanning/aqua-enterprise.md) as an active vulnerability scanner.
-   If you skip this step, the operator will ensure default [Settings](./../../settings.md) on startup:
+   If you skip this step, the operator will ensure default [Settings](../settings.md) on startup:
    ```
    kubectl apply -f https://raw.githubusercontent.com/aquasecurity/starboard/{{ git.tag }}/deploy/static/03-starboard-operator.config.yaml
    ```
@@ -70,7 +70,7 @@ configure it to watch the `default` namespaces:
    ```
    The operator will be installed in the `starboard-system` namespace and will select all namespaces, except
    `kube-system` and `starboard-system`. Note that the `spec.config` property allows you to override the default
-   [Configuration](./../configuration.md) of the operator's Deployment.
+   [Configuration](../configuration.md) of the operator's Deployment.
 7. After install, watch the operator come up using the following command:
    ```console
    $ kubectl get clusterserviceversions -n starboard-system

@@ -10,7 +10,7 @@ of these Kubernetes playgrounds:
 * [Play with Kubernetes]
 
 You also need the Starboard Operator to be installed in the `starboard-system` namespace, e.g. with
-[kubectl](./installation/kubectl.md) or [Helm](./installation/helm.md). Let's also assume that the operator is
+[kubectl](installation/kubectl.md) or [Helm](installation/helm.md). Let's also assume that the operator is
 configured to discover built-in Kubernetes resources in all namespaces, except `kube-system` and `starboard-system`.
 
 ## Workloads Scanning
@@ -255,6 +255,6 @@ kube-system      └─Pod/kube-scheduler-kind-control-plane           True     
 [Katacoda]: https://www.katacoda.com/courses/kubernetes/playground/
 [Play with Kubernetes]: http://labs.play-with-k8s.com/
 [tree]: https://github.com/ahmetb/kubectl-tree
-[Private Registries]: ./../vulnerability-scanning/private-registries.md
-[Vulnerability Scanner]: ./../vulnerability-scanning/index.md
-[Configuration Checker]: ./../configuration-auditing/index.md
+[Private Registries]: vulnerability-scanning/private-registries.md
+[Vulnerability Scanner]: vulnerability-scanning/index.md
+[Configuration Checker]: configuration-auditing/index.md

@@ -6,7 +6,7 @@ This operator automatically updates security report resources in response to wor
 cluster - for example, initiating a vulnerability scan and configuration audit when a new Pod is started.
 
 <figure>
-  <img src="../images/operator/starboard-operator-workloads.png" />
+  <img src="images/operator/starboard-operator-workloads.png" />
   <figcaption>Workload reconcilers discover K8s controllers, manage scan jobs, and create VulnerabilityReport and ConfigAuditReport objects.</figcaption>
 </figure>
 
@@ -14,7 +14,7 @@ Similarly, the operator performs infrastructure checks by watching Kubernetes cl
 for each of them.
 
 <figure>
-  <img src="../images/operator/starboard-operator-infrastructure.png" />
+  <img src="images/operator/starboard-operator-infrastructure.png" />
   <figcaption>Infrastructure reconciler discovers K8s nodes, manages scan jobs, and creates CISKubeBenchReport objects.</figcaption>
 </figure>
 
@@ -33,7 +33,7 @@ If hashes are not equal then affected ConfigAuditReport objects are deleted, whi
 with new plugin's configuration.
 
 <figure>
-  <img src="../images/operator/starboard-operator-config.png" />
+  <img src="images/operator/starboard-operator-config.png" />
   <figurecaption>Plugin configuration reconciler deletes ConfigAuditReports whenever the configuration changes.</figurecaption>
 </figure>
 
@@ -44,11 +44,11 @@ with new plugin's configuration.
 
 ## What's Next?
 
-- Install the operator and follow the [Getting Started](./getting-started.md) guide.
+- Install the operator and follow the [Getting Started](getting-started.md) guide.
 
-[vulnerabilityreports]: ./../crds/vulnerability-report.md
-[configauditreports]: ./../crds/configaudit-report.md
-[ciskubebenchreports]: ./../crds/ciskubebench-report.md
+[vulnerabilityreports]: crds/vulnerability-report.md
+[configauditreports]: crds/configaudit-report.md
+[ciskubebenchreports]: crds/ciskubebench-report.md
 [kubehunterreports]: ./../crds/kubehunter-report.md
 [clustercompliancereports]: ./../crds/clustercompliance-report.md
 [clustercompliancedetailreports]: ./../crds/clustercompliancedetail-report.md

@@ -9,21 +9,19 @@ edit_uri: ""
 
 nav:
   - Introduction: index.md
-  - Starboard Operator:
-      - Overview: operator/index.md
-      - Installation:
-          - kubectl: operator/installation/kubectl.md
-          - Helm: operator/installation/helm.md
-          - Operator Lifecycle Manager: operator/installation/olm.md
-          - Upgrade: operator/installation/upgrade.md
-      - Getting Started: operator/getting-started.md
-      - Configuration: operator/configuration.md
-      - Troubleshooting: operator/troubleshooting.md
+  - Overview: overview.md
+  - Installation:
+      - kubectl: installation/kubectl.md
+      - Helm: installation/helm.md
+      - Operator Lifecycle Manager: installation/olm.md
+      - Upgrade: installation/upgrade.md
+  - Getting Started: getting-started.md
+  - Configuration: configuration.md
+  - Troubleshooting: troubleshooting.md
   - Settings: settings.md
   - Vulnerability Scanning:
       - Overview: vulnerability-scanning/index.md
       - Trivy Scanner: vulnerability-scanning/trivy.md
-      - Aqua Enterprise Scanner: vulnerability-scanning/aqua-enterprise.md
       - Private Registries: vulnerability-scanning/private-registries.md
       - Managed Registries: vulnerability-scanning/managed-registries.md
   - Configuration Auditing:
@@ -41,7 +39,6 @@ nav:
       - ConfigAuditReport: crds/configaudit-report.md
       - ClusterConfigAuditReport: crds/clusterconfigaudit-report.md
       - CISKubeBenchReport: crds/ciskubebench-report.md
-      - KubeHunterReport: crds/kubehunter-report.md
 
 theme:
   name: material

@@ -3,8 +3,8 @@
 [Helm], which is de facto standard package manager for Kubernetes, allows installing applications from parameterized
 YAML manifests called Helm [charts].
 
-To address shortcomings of [static YAML manifests](./kubectl.md) we provide the Helm chart to deploy the Starboard
-Operator. The Helm chart supports all [Install Modes](./../configuration.md#install-modes).
+To address shortcomings of [static YAML manifests](kubectl.md) we provide the Helm chart to deploy the Starboard
+Operator. The Helm chart supports all [Install Modes](../configuration.md#install-modes).
 
 As an example, let's install Security Manager in the `kube-system` namespace and configure it to select all namespaces,
 except `kube-system`:

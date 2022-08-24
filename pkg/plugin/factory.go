@@ -54,7 +54,7 @@ func (r *Resolver) WithClient(client client.Client) *Resolver {
 // GetVulnerabilityPlugin is a factory method that instantiates the vulnerabilityreport.Plugin.
 //
 // Starboard currently supports Trivy scanner in Standalone and ClientServer
-// mode, and Aqua Enterprise scanner.
+// mode.
 //
 // You could add your own scanner by implementing the vulnerabilityreport.Plugin interface.
 func (r *Resolver) GetVulnerabilityPlugin() (vulnerabilityreport.Plugin, starboard.PluginContext, error) {

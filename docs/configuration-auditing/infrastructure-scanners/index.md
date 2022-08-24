@@ -71,6 +71,6 @@ cluster   kube-hunter   27h   0      0        1
 
 [kube-bench]: https://github.com/aquasecurity/kube-bench/
 [kube-hunter]: https://github.com/aquasecurity/kube-hunter/
-[Infrastructure Scanning]: ./../../operator/getting-started.md#infrastructure-scanning
+[Infrastructure Scanning]: ../../getting-started.md#infrastructure-scanning
 [CISKubeBenchReport]: ./../../crds/ciskubebench-report.md
 [Automating Kubernetes Compliance Checks with Starboard Operator]: https://www.youtube.com/watch?v=hOQyEPL-ULI

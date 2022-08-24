@@ -72,7 +72,7 @@ clean:
 
 .PHONY: docker-build
 docker-build: $(BIN)/kube-security-manager
-	$(DOCKER) image build --no-cache -t $(IMAGE_NAME) -f build/starboard-operator/Dockerfile bin
+	$(DOCKER) image build --no-cache -t $(IMAGE_NAME) -f build/security-manager/Dockerfile bin
 
 .PHONY: kind-load-images
 kind-load-images: docker-build

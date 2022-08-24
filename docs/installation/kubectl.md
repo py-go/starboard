@@ -27,7 +27,7 @@ You can always change these settings by editing configuration objects. For examp
 mode, which is more efficient that the [Standalone] mode, or switch to [Aqua Enterprise] as an alternative vulnerability
 scanner.
 
-You can further adjust the [Configuration](./../configuration.md) of the operator with environment variables. For
+You can further adjust the [Configuration](../configuration.md) of the operator with environment variables. For
 example, to change the target namespace from all namespaces to the `default` namespace edit the `starboard-operator`
 Deployment and change the value of the `OPERATOR_TARGET_NAMESPACES` environment variable from the blank string
 (`""`) to the `default` value.
@@ -54,10 +54,10 @@ You can uninstall the operator with the following command:
 kubectl delete -f https://raw.githubusercontent.com/aquasecurity/starboard/{{ git.tag }}/deploy/static/starboard.yaml
 ```
 
-[Settings]: ./../../settings.md
-[Standalone]: ./../../vulnerability-scanning/trivy.md#standalone
-[ClientServer]: ./../../vulnerability-scanning/trivy.md#clientserver
+[Settings]: ../settings.md
+[Standalone]: ../vulnerability-scanning/trivy.md#standalone
+[ClientServer]: ../vulnerability-scanning/trivy.md#clientserver
 [Aqua Enterprise]: ./../../vulnerability-scanning/aqua-enterprise.md
 [Kustomize]: https://kustomize.io
-[Helm]: ./helm.md
+[Helm]: helm.md
 [NSA, CISA Kubernetes Hardening Guidance v1.0]: ./../../specs/NSA_Kubernetes_Hardening_Guidance_1.0.pdf

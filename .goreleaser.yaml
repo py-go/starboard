@@ -1,3 +1,4 @@
+---
 release:
   draft: false
   prerelease: auto
@@ -37,7 +38,7 @@ dockers:
       - "docker.io/danielpacak/kube-security-manager:{{ .Version }}-amd64"
     use: buildx
     goos: linux
-    dockerfile: build/starboard-operator/Dockerfile
+    dockerfile: build/security-manager/Dockerfile
     goarch: amd64
     ids:
       - kube-security-manager
@@ -54,7 +55,7 @@ dockers:
       - "docker.io/danielpacak/kube-security-manager:{{ .Version }}-arm64"
     use: buildx
     goos: linux
-    dockerfile: build/starboard-operator/Dockerfile
+    dockerfile: build/security-manager/Dockerfile
     goarch: arm64
     ids:
       - kube-security-manager
@@ -71,7 +72,7 @@ dockers:
       - "docker.io/danielpacak/kube-security-manager:{{ .Version }}-s390x"
     use: buildx
     goos: linux
-    dockerfile: build/starboard-operator/Dockerfile
+    dockerfile: build/security-manager/Dockerfile
     goarch: s390x
     ids:
       - kube-security-manager
@@ -88,7 +89,7 @@ dockers:
       - "docker.io/danielpacak/kube-security-manager:{{ .Version }}-ppc64le"
     use: buildx
     goos: linux
-    dockerfile: build/starboard-operator/Dockerfile
+    dockerfile: build/security-manager/Dockerfile
     goarch: ppc64le
     ids:
       - kube-security-manager
