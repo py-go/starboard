@@ -50,7 +50,7 @@ EOF
 ```
 
 The following table lists available settings with their default values. Check plugins' documentation to see
-configuration settings for common use cases. For example, switch Trivy from [Standalone] to [ClientServer] mode.
+configuration settings for common use cases.
 
 | CONFIGMAP KEY                                  | DEFAULT                               | DESCRIPTION                                                                                                                                                                                                                         |
 |------------------------------------------------|---------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -77,6 +77,5 @@ configuration settings for common use cases. For example, switch Trivy from [Sta
       -p '[{"op": "remove", "path": "/data/trivy.httpProxy"}]'
     ```
 
-[Standalone]: ./vulnerability-scanning/trivy.md#standalone
 [ClientServer]: ./vulnerability-scanning/trivy.md#clientserver
 [tolerations]: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration

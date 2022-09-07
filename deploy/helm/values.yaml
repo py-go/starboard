@@ -156,10 +156,6 @@ trivy:
       cpu: 500m
       memory: 500M
 
-  # githubToken is the GitHub access token used by Trivy to download the vulnerabilities
-  # database from GitHub. Only applicable in Standalone mode.
-  #
-  # githubToken: "*****"
 
   # serverInsecure is the flag to enable insecure connection to the Trivy server.
   #

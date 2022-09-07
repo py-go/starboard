@@ -23,8 +23,7 @@ kubectl logs deployment/starboard-operator -n starboard-system
 ```
 
 Starboard ensures the default [Settings] stored in ConfigMaps and Secrets created in the `starboard-system` namespace.
-You can always change these settings by editing configuration objects. For example, you can use Trivy in [ClientServer]
-mode, which is more efficient that the [Standalone] mode, or switch to [Aqua Enterprise] as an alternative vulnerability
+You can always change these settings by editing configuration objects. For example, you can switch to [Aqua Enterprise] as an alternative vulnerability
 scanner.
 
 You can further adjust the [Configuration](../configuration.md) of the operator with environment variables. For
@@ -55,7 +54,6 @@ kubectl delete -f https://raw.githubusercontent.com/aquasecurity/starboard/{{ gi
 ```
 
 [Settings]: ../settings.md
-[Standalone]: ../vulnerability-scanning/trivy.md#standalone
 [ClientServer]: ../vulnerability-scanning/trivy.md#clientserver
 [Aqua Enterprise]: ./../../vulnerability-scanning/aqua-enterprise.md
 [Kustomize]: https://kustomize.io

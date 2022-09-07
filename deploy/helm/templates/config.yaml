@@ -104,9 +104,6 @@ metadata:
   labels:
     {{- include "starboard-operator.labels" $ | nindent 4 }}
 data:
-  {{- if .githubToken }}
-  trivy.githubToken: {{ .githubToken | b64enc | quote }}
-  {{- end }}
   {{- if eq .mode "ClientServer" }}
   {{- if .serverToken }}
   trivy.serverToken: {{ .serverToken | b64enc | quote }}

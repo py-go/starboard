@@ -8,9 +8,7 @@ Job is expensive, Starboard does not reuse scan results in any way.
 For example, if a workload refers to the image that has already been scanned,
 Starboard will go ahead and create another (similar) K8s Job.
 
-To some extent, the problem of wasteful and long-running K8s Jobs can be
-mitigated by using Starboard with Trivy in the [ClientServer] mode instead of
-the default [Standalone] mode. In this case a configured Trivy server will cache
+While using Starboard with Trivy in the [ClientServer] mode,  a configured Trivy server will cache
 results of scanning image layers. However, there is still unnecessary overhead
 for managing K8s Jobs and communication between Trivy client and server.
 (The only real difference is that some Jobs may complete faster for already scanned
@@ -129,6 +127,5 @@ We can't use something like ownerReference since it would delete all vulnerabili
   a gate.
 * Both Starboard CLI and Starboard Operator can read and leverage ClusterVulnerabilityReports.
 
-[Standalone]: https://aquasecurity.github.io/starboard/v0.12.0/integrations/vulnerability-scanners/trivy/#standalone
 [ClientServer]: https://aquasecurity.github.io/starboard/v0.12.0/integrations/vulnerability-scanners/trivy/#clientserver
 [PR #879]: (https://github.com/aquasecurity/starboard/pull/879)
