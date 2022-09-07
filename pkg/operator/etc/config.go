@@ -24,6 +24,7 @@ type Config struct {
 	HealthProbeBindAddress                       string         `env:"OPERATOR_HEALTH_PROBE_BIND_ADDRESS" envDefault:":9090"`
 	CISKubernetesBenchmarkEnabled                bool           `env:"OPERATOR_CIS_KUBERNETES_BENCHMARK_ENABLED" envDefault:"true"`
 	VulnerabilityScannerEnabled                  bool           `env:"OPERATOR_VULNERABILITY_SCANNER_ENABLED" envDefault:"true"`
+	VulnerabilityScannerEnabledWorkloads         []string       `env:"OPERATOR_VULNERABILITY_SCANNER_ENABLED_WORKLOADS" envDefault:"KindPod, KindReplicaSet, KindReplicationController, KindStatefulSet, KindDaemonSet"`
 	VulnerabilityScannerScanOnlyCurrentRevisions bool           `env:"OPERATOR_VULNERABILITY_SCANNER_SCAN_ONLY_CURRENT_REVISIONS" envDefault:"false"`
 	VulnerabilityScannerReportTTL                *time.Duration `env:"OPERATOR_VULNERABILITY_SCANNER_REPORT_TTL"`
 	ConfigAuditScannerEnabled                    bool           `env:"OPERATOR_CONFIG_AUDIT_SCANNER_ENABLED" envDefault:"true"`
