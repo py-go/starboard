@@ -153,20 +153,10 @@ func Start(ctx context.Context, buildInfo starboard.BuildInfo, operatorConfig et
 			SecretsReader:  secretsReader,
 			Plugin:         plugin,
 			PluginContext:  pluginContext,
+			Clock:          ext.NewSystemClock(),
 			ReadWriter:     vulnerabilityreport.NewReadWriter(mgr.GetClient()),
 		}).SetupWithManager(mgr); err != nil {
 			return fmt.Errorf("unable to setup vulnerabilityreport reconciler: %w", err)
-		}
-
-		if operatorConfig.VulnerabilityScannerReportTTL != nil {
-			if err = (&controller.TTLReportReconciler{
-				Logger: ctrl.Log.WithName("reconciler").WithName("ttlreport"),
-				Config: operatorConfig,
-				Client: mgr.GetClient(),
-				Clock:  ext.NewSystemClock(),
-			}).SetupWithManager(mgr); err != nil {
-				return fmt.Errorf("unable to setup TTLreport reconciler: %w", err)
-			}
 		}
 	}
 
